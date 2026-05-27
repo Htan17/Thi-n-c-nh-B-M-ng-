@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sổ Tã Pro V38 - The Perfect Localization Edition</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <style>
+        /* ==========================================================================
+           1. BIẾN TOÀN CỤC
+           ========================================================================== */
+        :root {
+            --bg-color: #FFF0F3;
+            --glass-bg: rgba(255, 255, 255, 0.25); 
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-blur: blur(25px);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            
+            --primary-color: #FF8BA7;
+            --primary-light: #FFB3C6;
+            --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            --primary-shadow: rgba(255, 139, 167, 0.3);
+            
+            --success-color: #84DCC6;
+            --danger-color: #FF7E67;
+            --warning-color: #F6D6AD;
+            --info-color: #A0C4FF;
+            
+            --text-main: #33272A;
+            --text-muted: #594A4E;
+            
+            --font-heading: 'Be Vietnam Pro', sans-serif;
+            --font-body: 'Be Vietnam Pro', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            
+            --radius-sm: 16px;
+            --radius-md: 24px;
+            --radius-lg: 32px;
+            --radius-full: 9999px;
+            
+            --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; 
+            --space-5: 20px; --space-6: 28px; --space-7: 36px;
+            
+            --trans-fast: 0.15s ease;
+            --trans-smooth: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --trans-bounce: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* ==========================================================================
+           2. CHẾ ĐỘ BAN ĐÊM
+           ========================================================================== */
+        [data-theme="dark"] {
+            --bg-color: #0F0F13;
+            --glass-bg: rgba(20, 20, 25, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --primary-color: #FFB3C6;
+            --primary-gradient: linear-gradient(135deg, #FFB3C6, #FF8BA7);
+            --text-main: #FFFFFF;
+            --text-muted: #A0A0B0;
+        }
+
+        /* ==========================================================================
+           3. CSS RESET BẢO MẬT & CHỐNG BUG GIAO DIỆN
+           ========================================================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        html, body {
+            width: 100%; height: 100%; overflow: hidden; 
+            background-color: var(--bg-color); color: var(--text-main); 
+            font-family: var(--font-body); font-size: 16px; line-height: 1.6; 
+            user-select: none; -webkit-user-select: none; transition: background-color var(--trans-smooth);
+        }
+
+        input, textarea { user-select: auto; -webkit-user-select: auto; font-family: inherit; }
+        h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); font-weight: 700; color: var(--text-main); margin-bottom: var(--space-2); line-height: 1.3; }
+        button { border: none; background: none; font-family: inherit; cursor: pointer; outline: none; }
+
+        /* ==========================================================================
+           4. LỚP TIỆN ÍCH
+           ========================================================================== */
+        .text-center { text-align: center; } .text-left { text-align: left; } .text-right { text-align: right; }
+        .text-primary { color: var(--primary-color) !important; } .text-success { color: var(--success-color) !important; } 
+        .text-danger { color: var(--danger-color) !important; } .text-warning { color: var(--warning-color) !important; } .text-info { color: var(--info-color) !important; }
+        .text-muted { color: var(--text-muted); font-size: 0.9em; }
+        .fw-bold { font-weight: 800; } .fw-medium { font-weight: 600; } .fw-normal { font-weight: 400; }
+        
+        .d-flex { display: flex; } .flex-column { flex-direction: column; }
+        .align-items-center { align-items: center; } .align-items-start { align-items: flex-start; }
+        .justify-content-center { justify-content: center; } .justify-content-between { justify-content: space-between; } .flex-wrap { flex-wrap: wrap; }
+        
+        .flex-1 { flex: 1; }
+        .gap-2 { gap: var(--space-2); } .gap-3 { gap: var(--space-3); } .gap-4 { gap: var(--space-4); } .w-100 { width: 100%; }
+        .mt-2 { margin-top: var(--space-2); } .mt-3 { margin-top: var(--space-3); } .mt-4 { margin-top: var(--space-4); } 
+        .mb-2 { margin-bottom: var(--space-2); } .mb-3 { margin-bottom: var(--space-3); } .mb-4 { margin-bottom: var(--space-4); }
+        .p-2 { padding: var(--space-2); } .p-3 { padding: var(--space-3); } .p-4 { padding: var(--space-4); }
+
+        .text-shadow-glass { text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8); }
+        [data-theme="dark"] .text-shadow-glass { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+
+        /* ==========================================================================
+           5. BACKGROUND LAYERS
+           ========================================================================== */
+        #layer-base-color { position: fixed; inset: 0; z-index: 1; background-color: var(--bg-color); transition: background-color var(--trans-smooth); }
+        #layer-background-image { position: fixed; inset: 0; z-index: 2; background-size: cover; background-position: center; transition: opacity var(--trans-smooth), filter var(--trans-smooth); opacity: 0; }
+        #layer-overlay { position: fixed; inset: 0; z-index: 3; background: rgba(255, 255, 255, 0.02); pointer-events: none; }
+        [data-theme="dark"] #layer-overlay { background: rgba(10, 10, 15, 0.3); }
+        #layer-decorations { position: fixed; inset: 0; z-index: 4; pointer-events: none; }
+        
+        .corner-deco { position: absolute; font-size: 2.2rem; opacity: 0.85; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
+        .deco-tl { top: 15px; left: 15px; animation: floatObj 4s ease-in-out infinite; } .deco-tr { top: 15px; right: 15px; animation: floatObj 5s ease-in-out infinite reverse; }
+        .deco-bl { bottom: 120px; left: 15px; animation: floatObj 3.5s ease-in-out infinite; } .deco-br { bottom: 120px; right: 15px; animation: floatObj 4.5s ease-in-out infinite reverse; }
+
+        /* ==========================================================================
+           6. CĂN CHỈNH APP CONTAINER
+           ========================================================================== */
+        #app-container { max-width: 480px; margin: 0 auto; height: 100vh; position: relative; z-index: 5; display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .app-header { padding: var(--space-6) var(--space-5) var(--space-4); display: flex; justify-content: center; align-items: center; position: relative; z-index: 10; width: 100%; }
+        .header-title { font-size: 1.8rem; display: flex; align-items: center; justify-content: center; gap: var(--space-2); }
+
+        /* ==========================================================================
+           7. KHUNG KÍNH VÀ NÚT BẤM
+           ========================================================================== */
+        .glass-card { background-color: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: var(--space-5); box-shadow: var(--glass-shadow); margin: 0 auto var(--space-4) auto; width: calc(100% - var(--space-5) * 2); transition: transform var(--trans-fast), background-color var(--trans-smooth); position: relative; overflow: hidden; z-index: 5; }
+        .glass-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); opacity: 0; transition: opacity var(--trans-smooth); pointer-events: none; }
+        .glass-card:hover::before { opacity: 1; }
+
+        .ripple-btn { position: relative; overflow: hidden; transform: translate3d(0,0,0); transition: transform var(--trans-fast), box-shadow var(--trans-fast); }
+        .ripple-btn::after { content: ""; display: block; position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; background-image: radial-gradient(circle, #fff 10%, transparent 10.01%); background-repeat: no-repeat; background-position: 50%; transform: scale(10, 10); opacity: 0; transition: transform .4s, opacity .8s; }
+        .ripple-btn:active::after { transform: scale(0, 0); opacity: 0.3; transition: 0s; }
+
+        .btn-primary { background: var(--primary-gradient); color: white; padding: var(--space-4) var(--space-6); border-radius: var(--radius-full); font-size: 1.15rem; font-weight: 700; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: var(--space-2); width: calc(100% - var(--space-5) * 2); margin: var(--space-2) auto; box-shadow: 0 4px 15px var(--primary-shadow); border: 1px solid rgba(255,255,255,0.4); }
+        .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 8px var(--primary-shadow); }
+
+        .btn-secondary { background-color: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--glass-border); color: var(--text-main); padding: var(--space-3) var(--space-5); border-radius: var(--radius-full); font-size: 1rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); }
+        [data-theme="dark"] .btn-secondary { background-color: rgba(0, 0, 0, 0.3); color: white; }
+        .btn-secondary:active { transform: scale(0.95); }
+        .filter-btn.active { background: var(--primary-gradient); color: white !important; border-color: transparent; box-shadow: 0 4px 15px var(--primary-shadow); }
+
+        .glass-input { width: 100%; padding: var(--space-3) var(--space-4); border-radius: var(--radius-full); border: 1px solid var(--glass-border); background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); color: var(--text-main); font-family: inherit; font-size: 1rem; font-weight: 600; outline: none; transition: border-color var(--trans-fast), background var(--trans-fast), box-shadow var(--trans-fast); }
+        [data-theme="dark"] .glass-input { background: rgba(0, 0, 0, 0.2); color: white;}
+        .glass-input:focus { border-color: var(--primary-color); background: rgba(255,255,255,0.4); box-shadow: 0 0 10px rgba(255,139,167,0.2); }
+        [data-theme="dark"] .glass-input:focus { background: rgba(0,0,0,0.5); }
+        .glass-input::placeholder { color: var(--text-muted); font-weight: normal; opacity: 0.8; }
+
+        .social-btn { border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; padding: 0; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); transition: all 0.2s;}
+        [data-theme="dark"] .social-btn { background: rgba(255,255,255,0.05); }
+        .social-btn:active { transform: scale(0.9); }
+        .social-btn svg { width: 20px; height: 20px; fill: var(--text-main); }
+
+        /* ==========================================================================
+           8. MÀN HÌNH ĐĂNG NHẬP
+           ========================================================================== */
+        #auth-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        .auth-blob { position: absolute; border-radius: 50%; filter: blur(40px); opacity: 0.6; z-index: -1; animation: moveBlob 10s infinite alternate; }
+        .blob-1 { width: 300px; height: 300px; background: #FFC6C7; top: -50px; left: -100px; } .blob-2 { width: 400px; height: 400px; background: #C3F0CA; bottom: -100px; right: -100px; animation-delay: -5s; }
+        [data-theme="dark"] .blob-1 { background: #4A3F55; } [data-theme="dark"] .blob-2 { background: #2A2A35; }
+        .auth-container { width: 90%; max-width: 360px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: var(--radius-lg); padding: var(--space-6) var(--space-5); box-shadow: 0 15px 35px rgba(0,0,0,0.1); text-align: center; margin: 0 auto; }
+        [data-theme="dark"] .auth-container { background: rgba(0, 0, 0, 0.4); border-color: rgba(255,255,255,0.1); }
+        .auth-tabs { display: flex; background: rgba(0,0,0,0.05); border-radius: var(--radius-full); padding: 4px; margin-bottom: var(--space-5); position: relative; }
+        .auth-tab { flex: 1; padding: 10px 0; font-weight: 600; font-size: 0.9rem; cursor: pointer; border-radius: var(--radius-full); z-index: 2; transition: color var(--trans-fast); color: var(--text-muted); } .auth-tab.active { color: white; }
+        .auth-tab-slider { position: absolute; top: 4px; left: 4px; bottom: 4px; width: calc(50% - 4px); background: var(--primary-color); border-radius: var(--radius-full); z-index: 1; transition: transform var(--trans-bounce); }
+        .auth-form { display: none; animation: smoothPop 0.4s ease forwards; } .auth-form.active { display: block; }
+        .input-group { position: relative; margin-bottom: var(--space-4); } .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); opacity: 0.7;} .glass-input.with-icon { padding-left: 45px; text-align: left;}
+
+        /* ==========================================================================
+           9. CÁC TÍNH NĂNG CHÍNH (FEATURES)
+           ========================================================================== */
+        .piggy-bank-container { display: flex; flex-direction: column; align-items: center; padding: var(--space-4) 0; }
+        .piggy-wrapper { position: relative; width: 140px; height: 140px; margin-bottom: var(--space-3); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .piggy-wrapper.pop-active { transform: scale(1.15); filter: drop-shadow(0 10px 20px var(--primary-shadow)); }
+        .piggy-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05)); }
+        .piggy-circle-bg { fill: none; stroke: rgba(0,0,0,0.05); stroke-width: 6; } [data-theme="dark"] .piggy-circle-bg { stroke: rgba(255,255,255,0.05); }
+        .piggy-circle-fill { fill: none; stroke: url(#piggyGrad); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 1s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .piggy-inner { position: absolute; inset: 10px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
+        .progress-bar-bg { width: 100%; height: 12px; background-color: rgba(0,0,0,0.05); border-radius: var(--radius-full); overflow: hidden; margin: var(--space-3) 0 var(--space-2); position: relative; border: 1px solid var(--glass-border); }
+        .progress-bar-fill { height: 100%; background: var(--primary-gradient); border-radius: var(--radius-full); width: 0%; transition: width 1s ease; }
+
+        .calendar-wrapper { margin-bottom: var(--space-4); } .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; } .calendar-day-name { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; }
+        .calendar-day { aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; position: relative; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.2); }
+        [data-theme="dark"] .calendar-day { background: rgba(255,255,255,0.05); } .calendar-day:active { transform: scale(0.9); }
+        .calendar-day.today { border-color: var(--primary-color); font-weight: bold; color: var(--primary-color); background: rgba(255,255,255,0.5); }
+        .calendar-day.selected { background-color: var(--primary-color); color: white !important; border-color: var(--primary-color); box-shadow: 0 4px 10px var(--primary-shadow); } .calendar-day .status-dot { position: absolute; bottom: 2px; font-size: 0.5rem; }
+
+        .log-list { display: flex; flex-direction: column; gap: var(--space-3); width: 100%; align-items: center; }
+        .log-item { display: flex; flex-wrap: wrap; align-items: center; padding: var(--space-3); background-color: var(--glass-bg); backdrop-filter: var(--glass-blur); border-radius: var(--radius-md); border-left: 6px solid var(--primary-color); border-top: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); cursor: pointer; transition: transform 0.2s; width: calc(100% - var(--space-5) * 2); margin: 0 auto;}
+        .log-item:active { transform: scale(0.98); } .log-item.dry { border-left-color: var(--success-color); } .log-item.spend { border-left-color: var(--warning-color); }
+        .log-icon { width: 40px; height: 40px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin-right: var(--space-3); font-size: 1.2rem; background: rgba(255,255,255,0.5); }
+        .log-info { flex: 1; } .log-time { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; } .log-status { font-weight: 700; font-family: inherit; }
+        .log-detail-section { display: none; width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--glass-border); }
+        .log-progress-wrapper { width: 100%; margin-top: 6px; } .log-progress-bar { width: 100%; height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; overflow: hidden; position: relative; } .log-progress-fill { height: 100%; background: var(--primary-gradient); border-radius: 3px; width: 0%; transition: width 1s ease; }
+
+        .cart-item { border-left: 6px solid #A0C4FF; cursor: default; }
+        .cart-item:active { transform: none; }
+
+        .timer-card { background: var(--glass-bg); border: 1px solid var(--primary-color); border-radius: var(--radius-md); padding: var(--space-4); display: flex; align-items: center; justify-content: center; gap: 15px; margin: 0 auto var(--space-4) auto; box-shadow: 0 4px 15px var(--primary-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); position: relative; width: calc(100% - var(--space-5) * 2); }
+        .timer-icon { font-size: 2rem; animation: pulseIcon 2s infinite ease-in-out; line-height: 1; } .timer-info { display: flex; flex-direction: column; align-items: flex-start; flex: 1; }
+        .timer-label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; } .timer-value { font-family: var(--font-mono); font-size: 2rem; font-weight: 900; color: var(--primary-color); line-height: 1.1; }
+        .timer-brand { font-size: 0.75rem; font-weight: 700; color: white; background: var(--primary-gradient); padding: 2px 8px; border-radius: 6px; margin-top: 4px; }
+        .btn-timer-action { position: absolute; right: 15px; top: 15px; padding: 6px 12px; font-size: 0.8rem; font-weight: 800; border-radius: 10px; background: rgba(255, 126, 103, 0.15); color: var(--danger-color); border: 1px solid rgba(255, 126, 103, 0.3); }
+
+        .avatar-area { width: 120px; height: 120px; margin: 0 auto var(--space-4); position: relative; }
+        .avatar-circle-ui { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: var(--glass-bg); backdrop-filter: var(--glass-blur); border: 3px solid var(--primary-color); box-shadow: 0 8px 20px var(--primary-shadow); overflow: hidden; cursor: pointer; }
+        .avatar-edit-badge { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; background: var(--surface-color); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-md); border: 1px solid var(--primary-color); cursor: pointer; font-size: 1.2rem; z-index: 2; }
+        .avatar-option { width: 60px; height: 60px; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(5px); } .avatar-option:active { transform: scale(0.9); border-color: var(--primary-color); }
+        .color-picker { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);} .color-picker.active { border-color: var(--text-main); transform: scale(1.15); }
+        .setting-picker { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .setting-btn { padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 0.85rem; background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer; transition: all 0.2s; color: var(--text-muted); } .setting-btn.active { background: var(--primary-gradient); color: white !important; border-color: transparent; box-shadow: 0 4px 10px var(--primary-shadow); }
+        .brand-chip { padding: 8px 16px; border-radius: var(--radius-full); background: var(--glass-bg); border: 1px solid var(--glass-border); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; color: var(--text-main); display: flex; align-items: center; gap: 6px; flex-shrink: 0; } 
+        .brand-chip.active { background: var(--primary-gradient); color: white; border-color: transparent; box-shadow: 0 2px 8px var(--primary-shadow); }
+        .brand-chip-del { color: var(--danger-color); font-weight: 800; font-size: 1rem; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.5); }
+
+        .inventory-chip { padding: 8px 16px; border-radius: var(--radius-full); background: rgba(255,255,255,0.3); border: 1px solid var(--glass-border); font-size: 0.95rem; font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        [data-theme="dark"] .inventory-chip { background: rgba(0,0,0,0.3); color: white;}
+
+        /* ==========================================================================
+           10. THANH ĐIỀU HƯỚNG DƯỚI
+           ========================================================================== */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background-color: var(--glass-bg) !important; backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; gap: 0; padding: var(--space-2) 10px calc(var(--space-2) + env(safe-area-inset-bottom)); border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; padding: var(--space-2); color: var(--text-main); opacity: 0.5; transition: all var(--trans-fast); position: relative; flex: 1; }
+        .nav-item.active { opacity: 1; color: var(--primary-color); } .nav-item.active::after { content: ''; position: absolute; top: -2px; width: 5px; height: 5px; border-radius: 50%; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); animation: popIn 0.3s ease; }
+        .nav-icon { font-size: 1.5rem; margin-bottom: 2px; transition: transform var(--trans-bounce); line-height: 1; } .nav-item.active .nav-icon { transform: translateY(-6px) scale(1.2); filter: drop-shadow(0 4px 8px var(--primary-shadow)); }
+        .nav-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2px; transition: transform var(--trans-fast);} .nav-item.active .nav-label { transform: translateY(2px); }
+
+        /* ==========================================================================
+           11. MODALS & CANVAS
+           ========================================================================== */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 1000; align-items: center; justify-content: center; padding: var(--space-4); }
+        .modal-content { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-top: 1px solid rgba(255,255,255,0.5); border-left: 1px solid rgba(255,255,255,0.5); width: 100%; max-width: 400px; margin: 0 auto; border-radius: var(--radius-lg); padding: var(--space-5); animation: smoothPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+        [data-theme="dark"] .modal-content { background: rgba(25, 25, 32, 0.85); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); }
+        .btn-close-modal { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: background 0.2s; flex-shrink: 0; color: var(--text-main); } .btn-close-modal:active { background: rgba(0,0,0,0.15); } [data-theme="dark"] .btn-close-modal { background: rgba(255,255,255,0.1); color: white;}
+
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9998; pointer-events: none; }
+        .toast-msg { position: fixed; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); background: var(--primary-gradient); color: white; padding: 14px 24px; border-radius: 30px; z-index: 10000; font-weight: 700; box-shadow: 0 8px 20px var(--primary-shadow); border: 1px solid rgba(255,255,255,0.3); animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; text-align: center; white-space: nowrap; font-size: 0.95rem; }
+
+        /* ==========================================================================
+           12. ANIMATIONS
+           ========================================================================== */
+        @keyframes floatObj { 0% { transform: translateY(0px); } 50% { transform: translateY(-12px); } 100% { transform: translateY(0px); } }
+        @keyframes pulseIcon { 0% { transform: scale(1); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 10px var(--primary-color)); } 100% { transform: scale(1); } }
+        @keyframes moveBlob { 0% { transform: translate(0, 0) scale(1) rotate(0deg); } 100% { transform: translate(30px, 30px) scale(1.1) rotate(10deg); } }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.85); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes smoothPop { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 60% { opacity: 1; transform: scale(1.05) translateY(-5px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes slideUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { 0% { opacity: 0; top: -20px; } 100% { opacity: 1; top: calc(20px + env(safe-area-inset-top)); } }
+
+        .animate-slide { animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; }
+        .animate-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; } .delay-3 { animation-delay: 0.3s; }
+
+        .main-content { flex: 1; overflow-y: auto; padding-bottom: 120px; display: none; position: relative; z-index: 5; -webkit-overflow-scrolling: touch; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .tab-content { display: none; width: 100%; max-width: 480px; } .tab-content.active { display: block; animation: smoothPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        
+        .flying-icon { position: fixed; pointer-events: none; font-size: 24px; z-index: 9999; will-change: transform, opacity; }
+        @keyframes popAndFly { 0% { transform: translate(0, 0) scale(0.5); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="auth-overlay">
+        <div class="auth-blob blob-1"></div>
+        <div class="auth-blob blob-2"></div>
+        
+        <div style="font-size: 5rem; margin-bottom: 10px; animation: floatObj 3s infinite;">🍼</div>
+        <h1 class="text-primary mb-2 text-shadow-glass" style="font-size: 2.5rem; letter-spacing: 1px;" data-i18n="app_title">Sổ Tã Pro</h1>
+        <p class="text-muted mb-4 fw-bold text-shadow-glass" style="font-size: 1rem;" data-i18n="app_desc">Bảo mẫu số của riêng bé</p>
+        
+        <div class="auth-container glass-card" style="margin:0 auto; box-shadow: 0 15px 40px rgba(0,0,0,0.15); width: 100%; max-width: 360px;">
+            <div class="auth-tabs">
+                <div class="auth-tab-slider" id="auth-slider"></div>
+                <div class="auth-tab active" onclick="AppAuth.switchMode('login')" data-i18n="login_tab">Đăng Nhập</div>
+                <div class="auth-tab" onclick="AppAuth.switchMode('register')" data-i18n="register_tab">Đăng Ký</div>
+            </div>
+
+            <div id="form-login" class="auth-form active">
+                <div class="input-group">
+                    <span class="input-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                    <input type="text" id="login-username" class="glass-input with-icon" data-i18n-placeholder="username" placeholder="Tên tài khoản">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                    <input type="password" id="login-password" class="glass-input with-icon" data-i18n-placeholder="password" placeholder="Mật khẩu">
+                </div>
+                <button class="btn-primary w-100 mt-3 ripple-btn" style="margin-left:0; margin-right:0; padding: 14px;" onclick="AppAuth.login()" data-i18n="btn_enter">Vào Ứng Dụng</button>
+                
+                <div class="mt-4 mb-3 text-muted" style="font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="flex: 1; height: 1px; background: var(--glass-border);"></span>
+                    <span data-i18n="or_login_with">Hoặc dùng</span>
+                    <span style="flex: 1; height: 1px; background: var(--glass-border);"></span>
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="social-btn ripple-btn" onclick="AppAuth.loginGoogle()">
+                        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    </button>
+                    <button class="social-btn ripple-btn" onclick="AppAuth.loginFacebook()">
+                        <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </button>
+                    <button class="social-btn ripple-btn" onclick="AppAuth.loginX()">
+                        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="form-register" class="auth-form">
+                <div class="input-group">
+                    <span class="input-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span>
+                    <input type="text" id="reg-username" class="glass-input with-icon" data-i18n-placeholder="display_name" placeholder="Tên hiển thị">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>
+                    <input type="password" id="reg-password" class="glass-input with-icon" data-i18n-placeholder="create_password" placeholder="Tạo mật khẩu">
+                </div>
+                <button class="btn-primary w-100 mt-3 ripple-btn" style="margin-left:0; margin-right:0; background: linear-gradient(135deg, var(--success-color), #5CBAA0);" onclick="AppAuth.register()" data-i18n="btn_create">Tạo Tài Khoản</button>
+                
+                <div class="mt-4 mb-3 text-muted" style="font-size: 0.8rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="flex: 1; height: 1px; background: var(--glass-border);"></span>
+                    <span data-i18n="or_login_with">Hoặc dùng</span>
+                    <span style="flex: 1; height: 1px; background: var(--glass-border);"></span>
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <button class="social-btn ripple-btn" onclick="AppAuth.loginGoogle()">
+                        <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    </button>
+                    <button class="social-btn ripple-btn" onclick="AppAuth.loginFacebook()">
+                        <svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </button>
+                    <button class="social-btn ripple-btn" onclick="AppAuth.loginX()">
+                        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <button onclick="AppAuth.resetAll()" class="text-danger mt-3 text-shadow-glass fw-bold ripple-btn" style="font-size: 0.85rem; text-decoration: underline; padding: 8px;" id="reset-auth-btn" data-i18n="btn_reset">Khôi phục cài đặt gốc</button>
+            <label class="text-success mt-2 text-shadow-glass fw-bold ripple-btn d-block" style="font-size: 0.85rem; text-decoration: underline; padding: 8px; cursor: pointer;">
+                📥 Khôi phục dữ liệu (.json)
+                <input type="file" accept=".json" hidden onchange="AppCore.Backup.importAuth(event)">
+            </label>
+        </div>
+    </div>
+
+    <div id="layer-base-color"></div>
+    <div id="layer-background-image"></div>
+    <div id="layer-overlay"></div>
+    <div id="layer-decorations">
+        <div class="corner-deco deco-tl">🐰</div>
+        <div class="corner-deco deco-tr">🌸</div>
+        <div class="corner-deco deco-bl">🍬</div>
+        <div class="corner-deco deco-br">✨</div>
+    </div>
+    
+    <canvas id="confetti-canvas"></canvas>
+
+    <div id="app-container">
+        
+        <header class="app-header" style="display: none;" id="main-header">
+            <div class="header-title text-shadow-glass">
+                <span style="font-size: 2rem; margin-right: 6px; filter: drop-shadow(0 2px 4px rgba(255,255,255,0.6));">🎀</span>
+                <span id="app-title-name" data-i18n="app_title">Sổ Tã Pro</span>
+            </div>
+        </header>
+
+        <main class="main-content" id="main-content" style="display: none;">
+            
+            <div id="tab-home" class="tab-content active">
+                
+                <div class="glass-card animate-slide" style="background: var(--primary-gradient); border: 1px solid rgba(255,255,255,0.4); color: white; box-shadow: 0 8px 20px var(--primary-shadow);">
+                    <h2 id="greeting-text" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2); font-size: 1.4rem;">Chào buổi sáng!</h2>
+                    <p id="greeting-caption" class="fw-medium" style="font-size: 0.95rem; opacity: 0.9; text-shadow: 0 1px 2px rgba(0,0,0,0.1);">Hôm nay bé có ngoan khum ta?</p>
+                </div>
+
+                <div class="glass-card animate-slide delay-1">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="text-main" style="margin:0; font-size: 1.2rem;" data-i18n="health_piggy">Ống Heo Của Bé</h3>
+                        <span class="text-success fw-bold" style="background: var(--glass-bg); backdrop-filter: blur(5px); padding: 4px 12px; border-radius: 16px; font-size: 0.8rem; border: 1px solid var(--success-color);" id="target-badge">Mục tiêu: --</span>
+                    </div>
+                    
+                    <div class="piggy-bank-container">
+                        <div class="piggy-wrapper" id="piggy-main-icon">
+                            <svg class="piggy-svg" viewBox="0 0 150 150">
+                                <circle class="piggy-circle-bg" cx="75" cy="75" r="70"></circle>
+                                <circle class="piggy-circle-fill" id="piggy-svg-fill" cx="75" cy="75" r="70"></circle>
+                            </svg>
+                            <div class="piggy-inner text-shadow-glass" style="animation: none;">🐷</div>
+                        </div>
+                        <h2 class="text-primary mb-1" id="total-piggy" style="font-size: 2.2rem; font-weight: 800;">0</h2>
+                        <p class="text-muted text-center mb-2 fw-medium" style="font-size: 0.85rem;" data-i18n="saving_note">Tiền bỏ heo để dành mua sữa</p>
+                        
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="piggy-progress"></div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-3 w-100">
+                            <button class="btn-secondary flex-1 ripple-btn" onclick="AppUI.switchTab('tab-spend', document.getElementById('nav-spend-btn'))" style="border: 2px solid var(--info-color); color: var(--info-color); font-weight: 800; font-size: 1rem; padding: 14px 0; background: var(--glass-bg);">
+                                <span style="font-size: 1.2rem; margin-right: 4px;">🛒</span> <span data-i18n="btn_go_cart">Giỏ Hàng</span>
+                            </button>
+                            <button class="btn-secondary flex-1 ripple-btn" onclick="AppUI.openModal('money-modal')" style="border: 2px solid var(--primary-color); color: var(--primary-color); font-weight: 800; font-size: 1rem; padding: 14px 0; background: var(--glass-bg);">
+                                <span style="font-size: 1.2rem; margin-right: 4px;">+</span> <span data-i18n="add_money">Bỏ Ống</span>
+                            </button>
+                        </div>
+                        
+                        <button id="btn-reset-piggy" class="btn-secondary w-100 mt-3 ripple-btn" style="display:none; border: 2px dashed var(--danger-color); color: var(--danger-color); font-weight: 800; font-size: 1rem; padding: 10px 0; background: rgba(255,126,103,0.1);" onclick="AppCore.Finance.resetPiggy()">
+                            🔨 <span data-i18n="btn_reset_piggy">Đập Heo (Làm lại)</span>
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="d-flex animate-slide delay-2" style="padding: 0 var(--space-5) var(--space-4); gap: var(--space-3); width: 100%;">
+                    <div class="glass-card" style="flex: 1; margin: 0; text-align: center; padding: var(--space-3) var(--space-2);">
+                        <div style="font-size: 2.8rem; margin-bottom: 8px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">☀️</div>
+                        <h4 class="text-success mb-1" style="font-size: 1.1rem;" data-i18n="dry">Khô ráo</h4>
+                        <h2 id="today-dry-count" style="margin:0; font-size: 1.6rem;">0</h2>
+                    </div>
+                    <div class="glass-card" style="flex: 1; margin: 0; text-align: center; padding: var(--space-3) var(--space-2);">
+                        <div style="font-size: 2.8rem; margin-bottom: 8px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">💧</div>
+                        <h4 class="text-danger mb-1" style="font-size: 1.1rem;" data-i18n="wet">Tã ướt</h4>
+                        <h2 id="today-wet-count" style="margin:0; font-size: 1.6rem;">0</h2>
+                    </div>
+                </div>
+
+                <button class="btn-primary animate-slide delay-3 ripple-btn" id="btn-main-action" style="padding: 16px;" onclick="AppCore.Workflow.handleMainAction()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 6px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span id="txt-main-action" data-i18n="start_new_diaper">Bắt Đầu Mặc Tã Mới</span>
+                </button>
+            </div>
+
+            <div id="tab-log" class="tab-content">
+                <div class="app-header" style="padding-top: 0; padding-bottom: var(--space-4);">
+                    <h2 class="header-title" data-i18n="calendar_title">Nhật Ký Của Bé</h2>
+                </div>
+
+                <div class="timer-card animate-pop" id="diaper-timer-card">
+                    <div class="timer-icon text-primary">⏱️</div>
+                    <div class="timer-info">
+                        <div class="timer-label" data-i18n="current_diaper_time">THỜI GIAN ĐANG MẶC</div>
+                        <div class="timer-value" id="diaper-timer-value">00:00:00</div>
+                        <div class="timer-brand" id="diaper-current-brand" style="display:none;"></div>
+                    </div>
+                    <button class="btn-timer-action ripple-btn" id="btn-cancel-timer" style="display: none;" onclick="AppCore.Workflow.cancelCurrentCycle()">Stop</button>
+                </div>
+
+                <div class="glass-card calendar-wrapper">
+                    <div class="calendar-header">
+                        <button onclick="AppCore.Calendar.changeMonth(-1)" class="btn-secondary ripple-btn" style="padding: 6px 14px; font-weight: 800;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <h4 style="margin: 0; font-size: 1.2rem;" id="calendar-title">--</h4>
+                        <button onclick="AppCore.Calendar.changeMonth(1)" class="btn-secondary ripple-btn" style="padding: 6px 14px; font-weight: 800;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                    <div class="calendar-grid" id="calendar-days"></div>
+                    <div class="text-center mt-3">
+                        <button class="text-primary fw-bold ripple-btn" id="btn-clear-date" style="font-size: 0.9rem; text-decoration: underline; display: none; padding: 8px;" onclick="AppCore.Calendar.clearSelection()" data-i18n="show_all_logs">Hiển thị tất cả</button>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn-secondary filter-btn active ripple-btn" onclick="AppCore.Logs.setFilter('all', this)" style="flex: 1; padding: 8px;" data-i18n="filter_all">Tất cả</button>
+                        <button class="btn-secondary filter-btn ripple-btn" onclick="AppCore.Logs.setFilter('dry', this)" style="flex: 1; padding: 8px;" data-i18n="dry">Khô</button>
+                        <button class="btn-secondary filter-btn ripple-btn" onclick="AppCore.Logs.setFilter('wet', this)" style="flex: 1; padding: 8px;" data-i18n="wet">Ướt</button>
+                    </div>
+                    <div class="log-list" id="log-list-container"></div>
+                </div>
+            </div>
+
+            <div id="tab-spend" class="tab-content">
+                <div class="app-header" style="padding-top: 0; padding-bottom: var(--space-4);">
+                    <h2 class="header-title" data-i18n="cart_title">Giỏ Hàng Mua Sắm</h2>
+                </div>
+
+                <div class="glass-card animate-slide text-center">
+                    <p class="text-muted fw-bold mb-1" data-i18n="piggy_balance">Tiền bé đang có</p>
+                    <h2 class="text-success mb-3" id="cart-balance-display" style="font-size: 1.8rem; font-weight: 800;">0</h2>
+                    
+                    <button class="btn-secondary w-100 ripple-btn mb-2" onclick="AppUI.openModal('cart-item-modal')" style="border: 2px solid var(--info-color); color: var(--info-color); font-weight: 800; font-size: 1rem; padding: 12px 0; background: var(--glass-bg);">
+                        <span style="font-size: 1.2rem; margin-right: 4px;">➕</span> <span data-i18n="btn_add_to_cart">Thêm món vô giỏ</span>
+                    </button>
+                </div>
+
+                <div class="glass-card animate-slide delay-1">
+                    <h3 class="mb-3 text-main d-flex justify-content-between">
+                        <span data-i18n="cart_items">Các món định mua</span>
+                        <span class="text-danger" id="cart-estimated-total">0</span>
+                    </h3>
+                    
+                    <div class="log-list mb-3" id="cart-list-container"></div>
+                    
+                    <button class="btn-primary w-100 ripple-btn" style="margin: 0; background: var(--warning-color); box-shadow: 0 4px 15px rgba(246, 214, 173, 0.4);" onclick="AppCore.Finance.checkoutCart()">
+                        🛍️ <span data-i18n="btn_checkout">Chốt Đơn Mua Hàng</span>
+                    </button>
+                </div>
+
+                <div class="glass-card animate-slide delay-2">
+                    <h3 class="mb-3 text-main" data-i18n="spend_history">Lịch sử đã mua</h3>
+                    <div class="log-list" id="expense-list-container"></div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-content">
+                <div class="app-header" style="padding-top: 0; padding-bottom: var(--space-4);">
+                    <h2 class="header-title" data-i18n="settings_title">Cài Đặt Của Bé</h2>
+                </div>
+
+                <div class="glass-card" style="display: flex; flex-direction: column; gap: var(--space-4);">
+                    
+                    <div class="d-flex flex-column gap-3" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold text-center" data-i18n="language">Ngôn ngữ / Language</span>
+                        <div class="setting-picker">
+                            <button class="setting-btn lang-btn active ripple-btn" id="lang-vn" onclick="AppCore.Settings.changeLanguage('vn')">🇻🇳 VN</button>
+                            <button class="setting-btn lang-btn ripple-btn" id="lang-en" onclick="AppCore.Settings.changeLanguage('en')">🇬🇧 EN</button>
+                            <button class="setting-btn lang-btn ripple-btn" id="lang-zh" onclick="AppCore.Settings.changeLanguage('zh')">🇨🇳 ZH</button>
+                            <button class="setting-btn lang-btn ripple-btn" id="lang-ja" onclick="AppCore.Settings.changeLanguage('ja')">🇯🇵 JA</button>
+                            <button class="setting-btn lang-btn ripple-btn" id="lang-ko" onclick="AppCore.Settings.changeLanguage('ko')">🇰🇷 KO</button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex flex-column gap-3" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold text-center" data-i18n="currency">Đơn vị tiền tệ</span>
+                        <div class="setting-picker">
+                            <button class="setting-btn cur-btn active ripple-btn" id="cur-VND" onclick="AppCore.Settings.changeCurrency('VND')">đ (VNĐ)</button>
+                            <button class="setting-btn cur-btn ripple-btn" id="cur-USD" onclick="AppCore.Settings.changeCurrency('USD')">$ (USD)</button>
+                            <button class="setting-btn cur-btn ripple-btn" id="cur-CNY" onclick="AppCore.Settings.changeCurrency('CNY')">¥ (CNY)</button>
+                            <button class="setting-btn cur-btn ripple-btn" id="cur-JPY" onclick="AppCore.Settings.changeCurrency('JPY')">¥ (JPY)</button>
+                            <button class="setting-btn cur-btn ripple-btn" id="cur-KRW" onclick="AppCore.Settings.changeCurrency('KRW')">₩ (KRW)</button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold text-center" data-i18n="theme_color">Màu sắc chủ đạo</span>
+                        <div class="d-flex justify-content-center gap-3">
+                            <div class="color-picker active" style="background: #FF8BA7;" onclick="AppCore.Settings.changeThemeColor('#FF8BA7', '#FFB3C6', this)"></div>
+                            <div class="color-picker" style="background: #A0C4FF;" onclick="AppCore.Settings.changeThemeColor('#A0C4FF', '#BDB2FF', this)"></div>
+                            <div class="color-picker" style="background: #84DCC6;" onclick="AppCore.Settings.changeThemeColor('#84DCC6', '#A8E6CF', this)"></div>
+                            <div class="color-picker" style="background: #BCA0DC;" onclick="AppCore.Settings.changeThemeColor('#BCA0DC', '#D1C4E9', this)"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold" id="label-target" data-i18n="target_savings">Mục tiêu tiết kiệm</span>
+                        <input type="number" step="any" id="setting-target" onchange="AppCore.Settings.updateTarget(this.value)" style="width: 120px; text-align: right; padding: 8px 12px; border: 2px solid var(--glass-border); border-radius: 12px; font-weight: 800; font-size: 1rem; color: var(--success-color); outline:none; background: var(--glass-bg);">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold" id="label-diaper-price" data-i18n="diaper_price">Giá 1 chiếc tã</span>
+                        <input type="number" step="any" id="setting-price" onchange="AppCore.Settings.updatePrice(this.value)" style="width: 120px; text-align: right; padding: 8px 12px; border: 2px solid var(--glass-border); border-radius: 12px; font-weight: 800; font-size: 1rem; color: var(--primary-color); outline:none; background: var(--glass-bg);">
+                    </div>
+                    
+                    <div class="d-flex flex-column gap-3" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold text-center" data-i18n="manage_brands">Quản lý bỉm của bé</span>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="new-brand-input" class="glass-input" style="padding: 8px 12px; font-size: 0.9rem; text-align: left;" data-i18n-placeholder="brand_placeholder" placeholder="Nhập tên hãng...">
+                            <button class="btn-primary ripple-btn" style="width: auto; margin:0; padding: 8px 16px; font-size: 0.95rem;" onclick="AppCore.Settings.addBrand()" data-i18n="add">Thêm</button>
+                        </div>
+                        <div id="brands-settings-list" class="d-flex flex-wrap gap-2 mt-2 hide-scrollbar" style="overflow-x: auto; flex-wrap: nowrap;"></div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <span class="fw-bold text-center" data-i18n="manage_categories">Danh mục mua sắm</span>
+                        <div class="d-flex gap-2">
+                            <input type="text" id="new-category-input" class="glass-input" style="padding: 8px 12px; font-size: 0.9rem; text-align: left;" data-i18n-placeholder="category_placeholder" placeholder="VD: Khăn ướt, Sữa chua...">
+                            <button class="btn-primary ripple-btn" style="width: auto; margin:0; padding: 8px 16px; font-size: 0.95rem;" onclick="AppCore.Settings.addCategory()" data-i18n="add">Thêm</button>
+                        </div>
+                        <div id="categories-settings-list" class="d-flex flex-wrap gap-2 mt-2 hide-scrollbar" style="overflow-x: auto; flex-wrap: nowrap;"></div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold" data-i18n="bg_image">Ảnh nền cute</span>
+                            <span class="text-success fw-bold" style="font-size: 0.75rem;" data-i18n="bg_hd">✔️ Siêu nét luôn</span>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="AppCore.Settings.uploadBackground(event)">
+                            <button class="btn-secondary ripple-btn" onclick="document.getElementById('bg-upload').click()" style="padding: 8px 12px; font-size: 0.85rem; font-weight: 800;" data-i18n="btn_upload">Đổi</button>
+                            <button class="text-danger fw-bold ripple-btn" onclick="AppCore.Settings.clearBackground()" style="font-size: 0.9rem; padding: 8px; border-radius: 8px;" data-i18n="btn_delete">Xóa</button>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex flex-column gap-2" style="padding-bottom: var(--space-3); border-bottom: 1px solid var(--glass-border);">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold" data-i18n="bg_brightness">Độ sáng hình nền</span>
+                            <span id="brightness-val" class="text-primary fw-bold" style="font-size: 1.1rem;">100%</span>
+                        </div>
+                        <input type="range" id="setting-brightness" min="50" max="200" value="100" onchange="AppCore.Settings.updateBrightness(this.value)" oninput="document.getElementById('brightness-val').innerText = this.value + '%'" style="width: 100%; accent-color: var(--primary-color);">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold" data-i18n="dark_mode">Giao diện tắt đèn</span>
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch">
+                                <input type="checkbox" id="setting-darkmode" onchange="AppCore.Settings.toggleTheme(this.checked)">
+                                <span class="slider-toggle"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="tab-profile" class="tab-content">
+                <div class="app-header" style="padding-top: 0; padding-bottom: var(--space-4);">
+                    <h2 class="header-title" data-i18n="profile_title">Hồ Sơ Của Bé</h2>
+                </div>
+                
+                <div class="glass-card text-center animate-slide">
+                    <div class="avatar-area">
+                        <div id="profile-avatar-display" class="avatar-circle-ui" onclick="AppUI.openModal('avatar-modal')">👶</div>
+                        <div class="avatar-edit-badge ripple-btn" onclick="AppUI.openModal('avatar-modal')">📷</div>
+                    </div>
+
+                    <h3 class="fw-bold text-primary mb-1 text-shadow-glass" id="profile-name-display" style="font-size: 1.8rem; letter-spacing: 0.5px;">Bé Ngoan</h3>
+                    <p class="text-muted mb-4 fw-bold" style="font-size: 0.95rem;" data-i18n="vip_member">Bé Ngoan Của Sổ Tã Pro</p>
+
+                    <div class="glass-card mb-4" style="background: rgba(255,255,255,0.4); border: 2px solid var(--primary-light); padding: 12px;">
+                        <h4 class="text-main mb-1" style="font-size: 1.1rem;">🌟 <span data-i18n="good_baby_points">Điểm Bé Ngoan</span> (<span data-i18n="level">Cấp</span> <span id="user-level-num">1</span>)</h4>
+                        <p class="text-primary fw-bold mb-2" style="font-size: 0.85rem;" id="user-level-name">Bé Ngoan Tập Sự</p>
+                        <div class="progress-bar-bg" style="height: 14px; background: rgba(0,0,0,0.1);">
+                            <div class="progress-bar-fill" id="exp-progress" style="background: var(--warning-color); width: 0%;"></div>
+                        </div>
+                        <p class="text-right text-muted mt-1 fw-bold" style="font-size: 0.75rem;"><span id="user-exp">0</span> / 100 EXP</p>
+                    </div>
+                    
+                    <div class="d-flex gap-2 mb-4 w-100 justify-content-between">
+                        <div class="glass-card flex-1 text-center m-0" style="padding: 12px; border-radius: 20px;">
+                            <div style="font-size: 1.8rem; margin-bottom: 4px;">🍼</div>
+                            <div class="text-muted fw-bold" style="font-size: 0.75rem;" data-i18n="total_diapers">Số bỉm tốn rùi</div>
+                            <div class="text-primary fw-bold" style="font-size: 1.4rem; font-family: var(--font-mono);" id="stat-diapers">0</div>
+                        </div>
+                        <div class="glass-card flex-1 text-center m-0" style="padding: 12px; border-radius: 20px;">
+                            <div style="font-size: 1.8rem; margin-bottom: 4px;">📅</div>
+                            <div class="text-muted fw-bold" style="font-size: 0.75rem;" data-i18n="total_days">Được mấy ngày</div>
+                            <div class="text-success fw-bold" style="font-size: 1.4rem; font-family: var(--font-mono);" id="stat-days">0</div>
+                        </div>
+                        <div class="glass-card flex-1 text-center m-0" style="padding: 12px; border-radius: 20px;">
+                            <div style="font-size: 1.8rem; margin-bottom: 4px;">⏱️</div>
+                            <div class="text-muted fw-bold" style="font-size: 0.75rem;" data-i18n="total_time">Tổng thời gian</div>
+                            <div class="text-warning fw-bold" style="font-size: 1.1rem; font-family: var(--font-mono);" id="stat-time">0h 0m</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-center mb-4">
+                        <button onclick="AppCore.Backup.export()" class="btn-secondary ripple-btn flex-1" style="font-size: 0.9rem; font-weight: 800; padding: 12px; box-shadow: var(--shadow-sm);">
+                            ⬇️ <span data-i18n="btn_export">Tải Dữ Liệu</span>
+                        </button>
+                        <label class="btn-secondary ripple-btn flex-1" style="font-size: 0.9rem; font-weight: 800; padding: 12px; cursor: pointer; margin: 0; box-shadow: var(--shadow-sm);">
+                            ⬆️ <span data-i18n="btn_import">Phục Hồi</span>
+                            <input type="file" accept=".json" hidden id="backup-upload" onchange="AppCore.Backup.import(event)">
+                        </label>
+                    </div>
+
+                    <button onclick="AppAuth.logout()" class="btn-secondary mt-2 w-100 justify-content-center ripple-btn" style="background: rgba(255, 126, 103, 0.15); color: var(--danger-color); border: 2px solid var(--danger-color); font-weight: 800; font-size: 1.1rem; padding: 14px;" data-i18n="btn_logout">
+                        Đăng xuất đi ngủ
+                    </button>
+                </div>
+
+                <div class="glass-card animate-slide delay-1 mt-4">
+                    <h3 class="mb-3 text-main d-flex align-items-center gap-2">🎒 <span data-i18n="inventory_title">Tủ Đồ Của Bé</span></h3>
+                    <div class="d-flex flex-wrap gap-2" id="inventory-list-container"></div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted fw-bold" style="font-size: 0.8rem;">Phiên bản v38.0 (The Perfect Localization Edition)</p>
+                    <p class="text-primary fw-bold" style="font-size: 0.7rem; margin-top: 4px;" data-i18n="footer_credit">Dành cho tất cả các bé ngoan trên thế giới 🍼✨</p>
+                </div>
+            </div>
+            
+        </main>
+
+        <nav class="bottom-nav" id="main-nav" style="display: none;">
+            <button class="nav-item active ripple-btn" onclick="AppUI.switchTab('tab-home', this)">
+                <div class="nav-icon">🏡</div>
+                <span class="nav-label" data-i18n="nav_home">Nhà Bé</span>
+            </button>
+            <button class="nav-item ripple-btn" onclick="AppUI.switchTab('tab-log', this)">
+                <div class="nav-icon">📝</div>
+                <span class="nav-label" data-i18n="nav_logs">Nhật Ký</span>
+            </button>
+            <button class="nav-item ripple-btn" id="nav-spend-btn" onclick="AppUI.switchTab('tab-spend', this)">
+                <div class="nav-icon">🛍️</div>
+                <span class="nav-label" data-i18n="nav_spend">Giỏ Hàng</span>
+            </button>
+            <button class="nav-item ripple-btn" onclick="AppUI.switchTab('tab-settings', this)">
+                <div class="nav-icon">🌸</div>
+                <span class="nav-label" data-i18n="nav_settings">Cài Đặt</span>
+            </button>
+            <button class="nav-item ripple-btn" onclick="AppUI.switchTab('tab-profile', this)">
+                <div class="nav-icon">🧸</div>
+                <span class="nav-label" data-i18n="nav_profile">Hồ Sơ</span>
+            </button>
+        </nav>
+
+        <div id="start-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 style="margin:0; font-size: 1.5rem;" data-i18n="start_diaper_title">Mặc bỉm mới nha</h2>
+                    <button class="btn-close-modal" onclick="AppUI.closeModal('start-modal')">❌</button>
+                </div>
+                <label class="fw-bold mb-2 d-flex text-muted" style="font-size: 1rem;" data-i18n="select_brand_start">Hãng nào ta?</label>
+                <div id="modal-start-brands" class="d-flex gap-2 hide-scrollbar pb-2 mb-4" style="overflow-x: auto; flex-wrap: nowrap; align-items: center;"></div>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex text-muted" style="font-size: 1rem;" data-i18n="start_time_label">Mấy giờ mặc đây bé</label>
+                    <input type="time" id="start-time-input" class="glass-input text-center" style="font-size: 1.6rem; padding: 12px; font-weight: 800;">
+                </div>
+                <button class="btn-primary w-100 ripple-btn" style="margin: 0; padding: 16px; font-size: 1.2rem;" onclick="AppCore.Workflow.submitCycleStart()" data-i18n="btn_start_diaper">Mặc xong rùi!</button>
+            </div>
+        </div>
+
+        <div id="record-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 style="margin:0; font-size: 1.5rem;" data-i18n="end_diaper_title">Thay bỉm nè</h2>
+                    <button class="btn-close-modal" onclick="AppUI.closeModal('record-modal')">❌</button>
+                </div>
+                <div class="d-flex gap-3 mb-4">
+                    <button class="btn-secondary ripple-btn" id="btn-type-dry" style="flex: 1; height: 110px; flex-direction: column; justify-content: center; border: 3px solid var(--success-color); color: var(--success-color); background: rgba(132, 220, 198, 0.15);" onclick="AppCore.Logs.setType('dry')">
+                        <span style="font-size: 3rem;">☀️</span><span class="fw-bold mt-2" style="font-size: 1.1rem;" data-i18n="dry">Khô cong</span>
+                    </button>
+                    <button class="btn-secondary ripple-btn" id="btn-type-wet" style="flex: 1; height: 110px; flex-direction: column; justify-content: center; border: 3px solid var(--glass-border); background: var(--glass-bg);" onclick="AppCore.Logs.setType('wet')">
+                        <span style="font-size: 3rem;">💧</span><span class="fw-bold mt-2 text-muted" style="font-size: 1.1rem;" data-i18n="wet">Ướt nhem</span>
+                    </button>
+                </div>
+                
+                <label class="fw-bold mb-2 d-flex text-muted" style="font-size: 1rem;" data-i18n="select_brand">Bỉm vừa mặc là bỉm nào</label>
+                <div id="modal-brands-selector" class="d-flex gap-2 hide-scrollbar pb-2 mb-4" style="overflow-x: auto; flex-wrap: nowrap; align-items: center;"></div>
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 d-flex text-muted" style="font-size: 1rem;" data-i18n="end_time_label">Mấy giờ thay dợ</label>
+                    <input type="time" id="record-time" class="glass-input text-center" style="font-size: 1.6rem; padding: 12px; font-weight: 800;">
+                </div>
+                <button class="btn-primary w-100 ripple-btn" style="margin: 0; padding: 16px; font-size: 1.2rem;" onclick="AppCore.Workflow.submitCycleEnd()" data-i18n="btn_save">Lưu lại nha</button>
+            </div>
+        </div>
+
+        <div id="money-modal" class="modal-overlay">
+            <div class="modal-content text-center">
+                <div class="modal-header" style="margin-bottom: 0;">
+                    <div style="flex:1;"></div>
+                    <button class="btn-close-modal" onclick="AppUI.closeModal('money-modal')">❌</button>
+                </div>
+                <h2 class="mb-2 text-primary" style="font-size: 1.6rem;" data-i18n="add_money_title">Đút Heo Đất</h2>
+                <p class="text-muted mb-4 fw-bold" style="font-size: 0.9rem;" data-i18n="add_money_desc">Tiết kiệm được miếng bỉm nào, bé tự thưởng xiền nha!</p>
+                <input type="number" step="any" id="money-input" class="glass-input text-center mb-4" style="font-size: 2.2rem; font-weight: 800; color: var(--primary-color); letter-spacing: 1px; padding: 16px;" placeholder="5">
+                <button class="btn-primary w-100 ripple-btn" style="margin: 0; padding: 16px; font-size: 1.2rem;" onclick="AppCore.Finance.submitMoney()" data-i18n="btn_confirm">Cho heo măm măm</button>
+            </div>
+        </div>
+
+        <div id="cart-item-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header" style="margin-bottom: 0;">
+                    <h2 class="mb-2 text-info" style="font-size: 1.6rem; margin:0;" data-i18n="cart_item_modal_title">Bé Mua Gì Nè?</h2>
+                    <button class="btn-close-modal" onclick="AppUI.closeModal('cart-item-modal')">❌</button>
+                </div>
+                <p class="text-muted mb-4 fw-bold text-center" style="font-size: 0.9rem;" data-i18n="cart_item_modal_desc">Chọn món bé thích để bỏ vô giỏ hàng nghen!</p>
+                
+                <div id="modal-category-selector" class="d-flex gap-2 hide-scrollbar pb-2 mb-3" style="overflow-x: auto; flex-wrap: nowrap; align-items: center;"></div>
+                
+                <div class="mb-3">
+                    <label class="fw-bold mb-1 d-flex text-muted" style="font-size: 0.85rem;" data-i18n="item_name">Tên món đồ</label>
+                    <input type="text" id="cart-item-name" class="glass-input" placeholder="Tên món..." style="font-size: 1.1rem; padding: 12px;">
+                </div>
+                
+                <div class="d-flex gap-3 mb-4">
+                    <div class="flex-1">
+                        <label class="fw-bold mb-1 d-flex text-muted" style="font-size: 0.85rem;" data-i18n="item_qty">Số lượng</label>
+                        <input type="number" id="cart-item-qty" class="glass-input text-center" value="1" min="1" style="font-size: 1.4rem; padding: 10px; font-weight: 800;">
+                    </div>
+                    <div class="flex-1">
+                        <label class="fw-bold mb-1 d-flex text-muted" style="font-size: 0.85rem;" data-i18n="item_price">Giá 1 món</label>
+                        <input type="number" step="any" id="cart-item-price" class="glass-input text-center" placeholder="0" style="font-size: 1.4rem; padding: 10px; font-weight: 800; color: var(--info-color);">
+                    </div>
+                </div>
+                
+                <button class="btn-primary w-100 ripple-btn" style="margin: 0; padding: 16px; font-size: 1.1rem; background: var(--info-color); box-shadow: 0 4px 15px rgba(160, 196, 255, 0.4);" onclick="AppCore.Finance.addCartItem()" data-i18n="btn_confirm_add_cart">Thêm Vô Giỏ Hàng</button>
+            </div>
+        </div>
+
+        <div id="avatar-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 style="margin:0; font-size: 1.5rem;" data-i18n="change_avatar">Đổi Avatar Bé Yêu</h2>
+                    <button class="btn-close-modal" onclick="AppUI.closeModal('avatar-modal')">❌</button>
+                </div>
+                <p class="text-muted text-center mb-4 fw-bold" style="font-size: 1rem;" data-i18n="choose_icon">Chọn cái icon cute hột me nè</p>
+                <div class="d-flex flex-wrap gap-3 mb-4 justify-content-center">
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('👶')">👶</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🍼')">🍼</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🐥')">🐥</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🧸')">🧸</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🧷')">🧷</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🐰')">🐰</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🐱')">🐱</div>
+                    <div class="avatar-option ripple-btn" onclick="AppCore.Settings.updateAvatar('🦄')">🦄</div>
+                </div>
+                <div class="text-center text-muted mb-3 fw-bold mt-3" style="font-size: 1rem;" data-i18n="or_upload">Hong thích thì lấy ảnh của bé luôn</div>
+                <label class="btn-primary w-100 ripple-btn" style="margin: 0; padding: 16px; font-size: 1.2rem; cursor: pointer;">
+                    📷 <span data-i18n="btn_upload">Chọn Ảnh Ngay</span>
+                    <input type="file" accept="image/*" hidden onchange="AppCore.Settings.uploadCustomAvatar(event)">
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtnPnB-nGauIQZOWVcErwF3FiYcIeN5bw",
+            authDomain: "thienbicanhmong.firebaseapp.com",
+            projectId: "thienbicanhmong",
+            storageBucket: "thienbicanhmong.firebasestorage.app",
+            messagingSenderId: "921080331892",
+            appId: "1:921080331892:web:ef3ed0c8be1e99cb4c5b21",
+            measurementId: "G-SP47E0RBRM"
+        };
+        
+        if (firebaseConfig && firebaseConfig.apiKey) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const babyCareTips = {
+            vn: ["Sáng gòi bé ơi! ⛅ Hôm nay bé có tè dầm khum? Hong tè thì bé ngoan xỉu á! 🍼🥰🤭", "Bé ngoan của tui hôm nay ăn ngoan ngủ kỹ nha! 🧸💤", "Bỉm khô ráo là bé vui cả ngày luôn nè! ☀️🥰", "Đừng quên ghi sổ tã nha bé ngoan! 📝🐰", "Tã ướt là bé nhớ thay liền nha, không là bị hăm á 💧🥺", "Bé ngoan hông khóc nhè là được thưởng kẹo nè! 🍬🐥", "Cố gắng giữ bỉm khô để đút heo được nhiều xiền nha bé! 🐷💰", "Bé cười một cái là sáng bừng cả app luôn á! ☀️😄"],
+            en: ["Good morning baby! ⛅ Did you wet the bed today? If not, you're the best! 🍼🥰🤭", "Eat well and sleep tight today, my sweet baby! 🧸💤", "A dry diaper keeps baby happy all day long! ☀️🥰", "Don't forget to log your diapers, good baby! 📝🐰", "Remember to change a wet diaper immediately! 💧🥺", "No crying means you get a sweet candy! 🍬🐥", "Save money in your piggy bank by keeping your diaper dry! 🐷💰", "Your smile brightens up the whole app! ☀️😄"],
+            zh: ["早安宝贝！⛅ 今天尿床了吗？没有的话真是个乖宝宝！🍼🥰🤭", "乖宝宝今天也要好好吃饭乖乖睡觉哦！🧸💤", "干爽的纸尿裤让宝宝开心每一天！☀️🥰", "乖宝宝别忘了记录纸尿裤哦！📝🐰", "纸尿裤湿了记得马上换，不然会红屁屁哦 💧🥺", "不哭闹的乖宝宝有糖吃哦！🍬🐥", "保持纸尿裤干爽，给小猪存钱罐多存点钱吧！🐷💰", "你的笑容点亮了整个应用！☀️😄"],
+            ja: ["おはよう赤ちゃん！⛅ 今日はおねしょした？してないならいい子だね！🍼🥰🤭", "今日はよく食べて、よく眠ってね！🧸💤", "おむつが乾いていると一日中ご機嫌だね！☀️🥰", "いい子だからおむつの記録を忘れないでね！📝🐰", "おむつが濡れたらすぐに替えてね！💧🥺", "泣かないいい子にはキャンディをあげるよ！🍬🐥", "おむつを乾いたままにして、貯金箱にお金を貯めようね！🐷💰", "赤ちゃんの笑顔でアプリが明るくなるよ！☀️😄"],
+            ko: ["좋은 아침 아기야! ⛅ 오늘 쉬야 했어? 안 했으면 정말 착해! 🍼🥰🤭", "오늘도 맘마 잘 먹고 푹 자야 해! 🧸💤", "기저귀가 뽀송하면 하루 종일 기분이 좋아! ☀️🥰", "착한 아기야 기저귀 기록하는 거 잊지 마! 📝🐰", "기저귀가 젖으면 바로 갈아입어야 해! 💧🥺", "울지 않는 착한 아기에게는 사탕을 줄게! 🍬🐥", "기저귀를 아껴서 저금통에 돈을 많이 모으자! 🐷💰", "네 미소가 앱 전체를 밝혀줘! ☀️😄"]
+        };
+
+        const i18n = {
+            vn: {
+                app_title: "Sổ Tã Pro", app_desc: "Bảo mẫu số của riêng bé", login_tab: "Đăng Nhập", register_tab: "Đăng Ký", btn_enter: "Vào Cung Điện", btn_create: "Tạo Nick Mới", btn_reset: "Xóa hết trơn (Khôi phục)", or_login_with: "Hoặc đăng nhập với",
+                greet_morning: "Sáng gòi bé ơi! ⛅", greet_afternoon: "Trưa mát mẻ nha bé! 🌤️", greet_evening: "Chiều tối vui vẻ! 🌙", greet_night: "Khuya rồi đó bé đi ngủ điiii! 😴",
+                current_diaper_time: "THỜI GIAN ĐANG MẶC", start_new_diaper: "Bắt Đầu Mặc Bỉm Mới", start_diaper_title: "Mặc Bỉm Mới Nha", select_brand_start: "Hãng nào ta?", start_time_label: "Mấy giờ mặc đây bé", btn_start_diaper: "Mặc xong rùi!",
+                end_diaper: "Gỡ bỉm đi tè", end_diaper_title: "Thay bỉm nè", end_time_label: "Mấy giờ thay dợ", health_piggy: "Ống Heo Của Bé", saving_note: "Tiền bỏ heo để dành mua đồ chơi", add_money: "Bỏ Ống",
+                dry: "Khô ráo", wet: "Ướt nhẹp", add_record: "Thêm Ghi Nhận", calendar_title: "Nhật Ký Của Bé", show_all_logs: "Hiển thị tất tần tật", filter_all: "Tất cả nè",
+                settings_title: "Cài Đặt Của Bé", analytics: "Bé Tè Dầm", analytics_desc: "Xem bé tè ướt bao nhiêu lần nè.", this_month: "Tháng này", last_week: "Tuần trước", this_week: "Tuần này",
+                language: "Ngôn ngữ / Language", currency: "Đơn vị tiền tệ", theme_color: "Màu sắc chủ đạo", target_savings: "Heo mập bao nhiêu?", diaper_price: "Một miếng bỉm bao xiền",
+                manage_brands: "Bỉm bé hay xài", brand_placeholder: "Nhập tên bỉm đi...", select_brand: "Bỉm vừa mặc là bỉm nào", add: "Thêm",
+                manage_categories: "Gợi ý mua đồ", category_placeholder: "VD: Khăn ướt, Sữa chua...", select_category: "Mua cái gì dợ?",
+                "Bỉm 🧷": "Bỉm 🧷", "Sữa 🍼": "Sữa 🍼", "Quần áo 👕": "Quần áo 👕", "Đồ chơi 🧸": "Đồ chơi 🧸",
+                bg_image: "Ảnh nền cute", bg_hd: "✔️ Siêu nét luôn", btn_upload: "Đổi Xíu", btn_delete: "Xóa Bỏ", bg_brightness: "Độ sáng hình nền", dark_mode: "Giao diện tắt đèn",
+                profile_title: "Hồ Sơ Bé Yêu", vip_member: "Bé Ngoan Của Sổ Tã Pro", btn_export: "Tải Dữ Liệu", btn_import: "Phục Hồi", btn_logout: "Đăng xuất đi khò khò", footer_credit: "Dành cho tất cả các bé ngoan trên thế giới 🍼✨",
+                nav_home: "Nhà Bé", nav_logs: "Nhật Ký", nav_spend: "Giỏ Hàng", nav_settings: "Cài Đặt", nav_profile: "Hồ Sơ",
+                btn_save: "Lưu lại nha", add_money_title: "Đút Heo Đất", add_money_desc: "Được miếng bỉm khô, đút heo liền nha!", btn_confirm: "Cho heo măm măm",
+                cart_title: "Giỏ Hàng Mua Sắm", piggy_balance: "Tiền bé đang có", btn_go_cart: "Giỏ Hàng", btn_add_to_cart: "Thêm món vô giỏ",
+                cart_items: "Các món định mua", cart_empty: "Giỏ hàng trống trơn à bé ơi 🛒", btn_checkout: "Chốt Đơn Mua Hàng",
+                spend_history: "Lịch sử đã mua", cart_item_modal_title: "Bé Mua Gì Nè?", cart_item_modal_desc: "Chọn món bé thích để bỏ vô giỏ nghen!",
+                item_name: "Tên món đồ", item_qty: "Số lượng", item_price: "Giá 1 món", btn_confirm_add_cart: "Thêm Vô Giỏ Hàng", btn_reset_piggy: "Đập Heo (Làm lại)",
+                level: "Cấp", level_name_1: "Bé Ngoan Tập Sự", level_name_2: "Thiên Thần Bỉm Sữa", level_name_3: "Baby Boss Quyền Lực",
+                inventory_title: "Tủ Đồ Của Bé", inventory_empty: "Tủ đồ trống trơn, bé chưa mua gì hết nha 🎒", good_baby_points: "Điểm Bé Ngoan",
+                change_avatar: "Đổi Avatar Xinh", choose_icon: "Chọn icon cute hột me", or_upload: "Hong thích thì lấy ảnh trong máy",
+                times: "lần", target: "Mục tiêu", current_brand: "Đang mặc:", no_brand_selected: "Chưa rõ", total_diapers: "Số bỉm tốn rùi", total_days: "Được mấy ngày", total_time: "Tổng thời gian",
+                confirm_reset_piggy: "Đập heo làm lại từ đầu nha bé ơi? 🐷🔨", confirm_delete_record: "Xóa lẹ luôn hả bé? 🗑️", confirm_delete_brand: "Xóa loại bỉm này hong bé? 🧷", confirm_delete_category: "Xóa danh mục này hong bé? 🛍️", confirm_refund: "Bé muốn xóa cái này và hoàn tiền lại cho heo? 💸", confirm_cancel_cycle: "Hủy mặc bỉm này luôn hả bé? (Xóa đồng hồ nha) ⏱️",
+                toast_firebase_missing: "Bé nhớ dán mã cấu hình Firebase vô file nha! 🍼", toast_loading: "Đợi xíu... ⏳",
+                toast_login_ok: "Bé vô nhà được rùi!", toast_login_err: "Mật khẩu sai nha bé!", toast_fill_all: "Ghi chữ vô chưa mà bấm dợ?", toast_reg_ok: "Mở nhà mới xong gòi!", toast_save_price: "Đã nhớ rùi nha!", toast_bg_ok: "Trang trí nhà đẹp xỉu! 🌟", toast_bg_del: "Dọn dẹp hình nền gòi", toast_avatar_ok: "Đổi mặt bé xinh rùi!",
+                toast_dry_msgs: ["Mông bé siêu khô ráo luôn á ☀️", "Giỏi quá! Cả ngày hong ướt 🐥", "Bé ngoan nhất nhà 🥰"], toast_wet_msgs: ["Bé tè mất tiu rùi 💦💧", "Úi chà, phải thay bỉm thui 🌊", "Bỉm phồng bự rùi nè 🚨"],
+                toast_money_ok: "Heo được ăn no rùi nha 🐷🎉", toast_spend_ok: "Chốt đơn rùi! Mua sắm vui vẻ nha bé! 🛍️", toast_not_enough: "Eo ôi heo đói, hông đủ xiền chốt đơn 🐷💦", toast_reset_piggy: "Bé đã đập heo cái chát! 🔨🐷", toast_refund_ok: "Đã trả lại tiền cho heo gòi nha! 🐷💸", toast_levelup: "Woww! Bé lên cấp mới gòi nha! 🎉👶",
+                toast_export_ok: "Lưu file vô máy rùi đó! 📦", toast_import_ok: "Khôi phục dữ liệu xong gòi! 🚀", toast_file_err: "Cái file nó bị lỗi gì á!", no_data: "Trắng bóc hong có gì hết.",
+                months: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"], days: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"]
+            },
+            en: {
+                app_title: "Baby Log Pro", app_desc: "Your personal digital nanny", login_tab: "Login", register_tab: "Register", btn_enter: "Enter App", btn_create: "Create Account", btn_reset: "Factory Reset", or_login_with: "Or continue with",
+                greet_morning: "Good morning! ⛅", greet_afternoon: "Good afternoon! 🌤️", greet_evening: "Good evening! 🌙", greet_night: "It's late! 😴",
+                current_diaper_time: "CURRENT DIAPER DURATION", start_new_diaper: "Start New Diaper", start_diaper_title: "Start Diaper", select_brand_start: "Brand to wear", start_time_label: "Start Time", btn_start_diaper: "Confirm Start",
+                end_diaper: "End & Log Diaper", end_diaper_title: "End Cycle", end_time_label: "End Time", health_piggy: "Piggy Bank", saving_note: "Money saved to buy toys", add_money: "Add Savings",
+                dry: "Dry", wet: "Wet", add_record: "Add Record", calendar_title: "Schedule Log", show_all_logs: "Show all history", filter_all: "All",
+                settings_title: "Analytics & Settings", analytics: "Wet Frequency", analytics_desc: "Track wet diaper incidents over time.", this_month: "This Month", last_week: "Last Week", this_week: "This Week",
+                language: "Language", currency: "Currency", theme_color: "Theme Color", target_savings: "Savings Target", diaper_price: "Price per Diaper",
+                manage_brands: "Manage Brands", brand_placeholder: "Brand name...", select_brand: "Diaper brand used", add: "Add",
+                manage_categories: "Suggestions", category_placeholder: "Ex: Toys, Milk...", select_category: "What to buy?",
+                "Bỉm 🧷": "Diapers 🧷", "Sữa 🍼": "Milk 🍼", "Quần áo 👕": "Clothes 👕", "Đồ chơi 🧸": "Toys 🧸",
+                bg_image: "Background Image", bg_hd: "✔️ HD Quality", btn_upload: "Upload", btn_delete: "Delete", bg_brightness: "Bg Brightness", dark_mode: "Dark Mode",
+                profile_title: "Baby Profile", vip_member: "Pro VIP Baby", btn_export: "Backup Data", btn_import: "Restore", btn_logout: "Safe Logout", footer_credit: "For all good babies in the world 🍼✨",
+                nav_home: "Home", nav_logs: "Logs", nav_spend: "Cart", nav_settings: "Settings", nav_profile: "Profile",
+                btn_save: "Save Record", add_money_title: "Add Savings", add_money_desc: "Every time you save a diaper, add money here!", btn_confirm: "Feed Piggy",
+                cart_title: "Shopping Cart", piggy_balance: "Piggy Balance", btn_go_cart: "Go to Cart", btn_add_to_cart: "Add to Cart",
+                cart_items: "Items in Cart", cart_empty: "Your cart is empty 🛒", btn_checkout: "Checkout",
+                spend_history: "Purchase History", cart_item_modal_title: "Add Item", cart_item_modal_desc: "What do you want to buy?",
+                item_name: "Item Name", item_qty: "Quantity", item_price: "Unit Price", btn_confirm_add_cart: "Add to Cart", btn_reset_piggy: "Break Piggy (Reset)",
+                level: "Level", level_name_1: "Novice Baby", level_name_2: "Diaper Angel", level_name_3: "Baby Boss",
+                inventory_title: "Baby's Inventory", inventory_empty: "Inventory is empty, you haven't bought anything yet 🎒", good_baby_points: "Good Baby Points",
+                change_avatar: "Change Avatar", choose_icon: "Choose an icon", or_upload: "Or upload from device",
+                times: "times", target: "Target", current_brand: "Current:", no_brand_selected: "Unknown", total_diapers: "Total Diapers", total_days: "Days Tracked", total_time: "Total Duration",
+                confirm_reset_piggy: "Break the piggy bank and start over? 🐷🔨", confirm_delete_record: "Delete this record? 🗑️", confirm_delete_brand: "Delete this diaper brand? 🧷", confirm_delete_category: "Delete this category? 🛍️", confirm_refund: "Delete this item and refund money to piggy? 💸", confirm_cancel_cycle: "Cancel current diaper cycle? ⏱️",
+                toast_firebase_missing: "Remember to configure Firebase! 🍼", toast_loading: "Loading... ⏳", toast_login_ok: "Login successful!", toast_login_err: "Incorrect password!", toast_fill_all: "Please fill all fields!", toast_reg_ok: "Account created!", toast_save_price: "Saved!", toast_bg_ok: "Background updated! 🌟", toast_bg_del: "Background deleted", toast_avatar_ok: "Avatar updated!",
+                toast_dry_msgs: ["Awesome! Baby is dry ☀️", "Great! Not wet at all 🐥", "Dry diaper, happy mom 🥰"], toast_wet_msgs: ["Oops, baby peed 💦💧", "Time for a fresh diaper 🌊", "We got a leak! 🚨"],
+                toast_money_ok: "Money saved in piggy bank 🐷🎉", toast_spend_ok: "Checkout success! Happy shopping! 🛍️", toast_not_enough: "Oops! Not enough savings to checkout 🐷💦", toast_reset_piggy: "Piggy bank broken! 🔨🐷", toast_refund_ok: "Money refunded to piggy! 🐷💸", toast_levelup: "Woww! You leveled up! 🎉👶",
+                toast_export_ok: "Backup downloaded successfully! 📦", toast_import_ok: "Restored successfully! 🚀", toast_file_err: "Invalid JSON file!", no_data: "No data available here.",
+                months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"], days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+            },
+            zh: {
+                app_title: "宝贝日记", app_desc: "您的私人数字保姆", login_tab: "登录", register_tab: "注册", btn_enter: "进入应用", btn_create: "创建账号", btn_reset: "恢复出厂设置", or_login_with: "或使用社交账号",
+                greet_morning: "早上好! ⛅", greet_afternoon: "下午好! 🌤️", greet_evening: "晚上好! 🌙", greet_night: "夜深了! 😴",
+                current_diaper_time: "当前穿戴时间", start_new_diaper: "换新纸尿裤", start_diaper_title: "开始穿戴", select_brand_start: "选择品牌", start_time_label: "开始时间", btn_start_diaper: "确认开始",
+                end_diaper: "结束并记录", end_diaper_title: "结束周期", end_time_label: "脱下时间", health_piggy: "小猪存钱罐", saving_note: "攒钱买玩具啦", add_money: "存入零钱",
+                dry: "干爽", wet: "尿湿", add_record: "记录", calendar_title: "宝贝日历", show_all_logs: "显示所有记录", filter_all: "全部",
+                settings_title: "统计与设置", analytics: "尿湿频率", analytics_desc: "追踪随时间推移的尿湿情况。", this_month: "本月", last_week: "上周", this_week: "本周",
+                language: "语言", currency: "货币单位", theme_color: "主题颜色", target_savings: "储蓄目标", diaper_price: "纸尿裤单价",
+                manage_brands: "管理品牌", brand_placeholder: "输入品牌名称...", select_brand: "使用的品牌", add: "添加",
+                manage_categories: "建议购物", category_placeholder: "例如：奶粉，玩具...", select_category: "买什么呢？",
+                "Bỉm 🧷": "纸尿裤 🧷", "Sữa 🍼": "牛奶 🍼", "Quần áo 👕": "衣服 👕", "Đồ chơi 🧸": "玩具 🧸",
+                bg_image: "背景图片", bg_hd: "✔️ 高清画质", btn_upload: "上传", btn_delete: "删除", bg_brightness: "背景亮度", dark_mode: "深色模式",
+                profile_title: "宝贝资料", vip_member: "Pro VIP 宝贝", btn_export: "备份数据", btn_import: "恢复数据", btn_logout: "安全退出", footer_credit: "献给世界上所有可爱的宝宝 🍼✨",
+                nav_home: "主页", nav_logs: "记录", nav_spend: "购物车", nav_settings: "设置", nav_profile: "我的",
+                btn_save: "保存记录", add_money_title: "存入零钱", add_money_desc: "每次省下一片纸尿裤，就把钱存到这里吧！", btn_confirm: "喂小猪",
+                cart_title: "购物车", piggy_balance: "存钱罐余额", btn_go_cart: "去购物车", btn_add_to_cart: "加入购物车",
+                cart_items: "购物车商品", cart_empty: "购物车是空的 🛒", btn_checkout: "结算", spend_history: "购物记录", cart_item_modal_title: "买什么呢？", cart_item_modal_desc: "选择您想买的物品放入购物车！",
+                item_name: "商品名称", item_qty: "数量", item_price: "单价", btn_confirm_add_cart: "确认加入", btn_reset_piggy: "砸金猪 (重置)",
+                level: "等级", level_name_1: "新手宝宝", level_name_2: "纸尿裤天使", level_name_3: "宝贝老板", inventory_title: "宝贝的衣橱", inventory_empty: "衣橱是空的，你还没买任何东西哦 🎒", good_baby_points: "乖宝宝积分",
+                change_avatar: "更换头像", choose_icon: "选择图标", or_upload: "或上传图片", times: "次", target: "目标", current_brand: "当前穿戴：", no_brand_selected: "未知", total_diapers: "总纸尿裤数", total_days: "记录天数", total_time: "总穿着时间",
+                confirm_reset_piggy: "砸碎存钱罐重新开始吗？🐷🔨", confirm_delete_record: "确认删除这条记录吗？🗑️", confirm_delete_brand: "确认删除这个品牌吗？🧷", confirm_delete_category: "确认删除这个分类吗？🛍️", confirm_refund: "删除此项并退款到存钱罐吗？💸", confirm_cancel_cycle: "取消当前的穿戴记录吗？⏱️",
+                toast_firebase_missing: "记得配置Firebase哦！🍼", toast_loading: "加载中... ⏳", toast_login_ok: "登录成功！", toast_login_err: "密码错误！", toast_fill_all: "请填写完整信息！", toast_reg_ok: "账号创建成功！", toast_save_price: "信息已保存！", toast_bg_ok: "背景更新成功！🌟", toast_bg_del: "背景已删除", toast_avatar_ok: "头像更新成功！",
+                toast_dry_msgs: ["太棒了！宝宝很干爽 ☀️", "不错！一点都没湿 🐥", "干爽的纸尿裤，妈妈放心 🥰"], toast_wet_msgs: ["哎呀，宝宝尿了 💦💧", "该换新纸尿裤啦 🌊", "哇，漏了漏了！🚨"],
+                toast_money_ok: "零钱已存入存钱罐 🐷🎉", toast_spend_ok: "结算成功！购物愉快哦宝贝！🛍️", toast_not_enough: "哎呀小猪饿了，钱不够结算啦 🐷💦", toast_reset_piggy: "金猪被砸破啦！🔨🐷", toast_refund_ok: "钱退回金猪啦！🐷💸", toast_levelup: "哇！升级啦！🎉👶",
+                toast_export_ok: "备份下载成功！📦", toast_import_ok: "恢复成功！🚀", toast_file_err: "无效的文件！", no_data: "暂无数据。",
+                months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"], days: ["日", "一", "二", "三", "四", "五", "六"]
+            },
+            ja: {
+                app_title: "ベビーログ", app_desc: "可愛い赤ちゃんの記録", login_tab: "ログイン", register_tab: "登録", btn_enter: "入る", btn_create: "アカウント作成", btn_reset: "初期化", or_login_with: "または",
+                greet_morning: "おはようございます! ⛅", greet_afternoon: "こんにちは! 🌤️", greet_evening: "こんばんは! 🌙", greet_night: "夜遅いですね! 😴",
+                current_diaper_time: "現在のおむつ着用時間", start_new_diaper: "新しいおむつ", start_diaper_title: "おむつ開始", select_brand_start: "ブランドを選ぶ", start_time_label: "開始時間", btn_start_diaper: "確認する",
+                end_diaper: "終了と記録", end_diaper_title: "サイクルの終了", end_time_label: "外した時間", health_piggy: "健康貯金箱", saving_note: "おもちゃのためのお金", add_money: "お金を入れる",
+                dry: "ドライ", wet: "ウェット", add_record: "記録する", calendar_title: "スケジュール", show_all_logs: "すべて表示", filter_all: "すべて",
+                settings_title: "分析と設定", analytics: "おむつの濡れ頻度", analytics_desc: "時間の経過とともに濡れた回数を追跡します。", this_month: "今月", last_week: "先週", this_week: "今週",
+                language: "言語", currency: "通貨", theme_color: "テーマカラー", target_savings: "目標貯金額", diaper_price: "おむつ単価",
+                manage_brands: "ブランド管理", brand_placeholder: "ブランド名...", select_brand: "使用したブランド", add: "追加",
+                manage_categories: "カテゴリを管理", category_placeholder: "例：おもちゃ、ミルク...", select_category: "何を買うの？",
+                "Bỉm 🧷": "おむつ 🧷", "Sữa 🍼": "ミルク 🍼", "Quần áo 👕": "服 👕", "Đồ chơi 🧸": "おもちゃ 🧸",
+                bg_image: "背景画像", bg_hd: "✔️ HD品質", btn_upload: "アップロード", btn_delete: "削除", bg_brightness: "背景の明るさ", dark_mode: "ダークモード",
+                profile_title: "プロフィール", vip_member: "VIP ベビー", btn_export: "バックアップ", btn_import: "復元する", btn_logout: "ログアウト", footer_credit: "世界中のいい子へ 🍼✨",
+                nav_home: "ホーム", nav_logs: "ログ", nav_spend: "カート", nav_settings: "設定", nav_profile: "プロフ",
+                btn_save: "記録を保存", add_money_title: "貯金を追加", add_money_desc: "おむつを節約するたびにここにお金を追加！", btn_confirm: "確認",
+                cart_title: "ショッピングカート", piggy_balance: "貯金残高", btn_go_cart: "カートへ", btn_add_to_cart: "カートに追加", cart_items: "カートのアイテム", cart_empty: "カートは空です 🛒", btn_checkout: "購入する",
+                spend_history: "購入履歴", cart_item_modal_title: "何を買うの？", cart_item_modal_desc: "買いたいものをカートに入れてね！", item_name: "商品名", item_qty: "数量", item_price: "単価", btn_confirm_add_cart: "追加する", btn_reset_piggy: "貯金箱を割る",
+                level: "レベル", level_name_1: "初心者ベビー", level_name_2: "おむつの天使", level_name_3: "ベビーボス", inventory_title: "ベビーの持ち物", inventory_empty: "何も買っていません 🎒", good_baby_points: "いい子ポイント",
+                change_avatar: "アバター変更", choose_icon: "アイコンを選ぶ", or_upload: "またはデバイスから", times: "回", target: "目標", current_brand: "現在:", no_brand_selected: "不明", total_diapers: "おむつの合計", total_days: "合計日数", total_time: "合計時間",
+                confirm_reset_piggy: "貯金箱を割ってやり直しますか？🐷🔨", confirm_delete_record: "この記録を削除しますか？🗑️", confirm_delete_brand: "このブランドを削除しますか？🧷", confirm_delete_category: "このカテゴリを削除しますか？🛍️", confirm_refund: "削除して貯金箱に返金しますか？💸", confirm_cancel_cycle: "現在の記録をキャンセルしますか？⏱️",
+                toast_firebase_missing: "Firebaseを設定してね！🍼", toast_loading: "ロード中... ⏳", toast_login_ok: "ログイン成功！", toast_login_err: "パスワードが間違っています！", toast_fill_all: "すべて入力してください！", toast_reg_ok: "アカウント作成！", toast_save_price: "保存しました！", toast_bg_ok: "背景を更新しました！🌟", toast_bg_del: "背景を削除しました", toast_avatar_ok: "アバターを更新しました！",
+                toast_dry_msgs: ["素晴らしい！赤ちゃんはドライです ☀️", "よかった！ 🐥", "ママも安心 🥰"], toast_wet_msgs: ["おしっこしました 💦💧", "新しいおむつの時間です 🌊", "漏れています！🚨"],
+                toast_money_ok: "貯金箱にお金を追加しました 🐷🎉", toast_spend_ok: "購入成功！楽しい買い物！🛍️", toast_not_enough: "お金が足りないよ！🐷💦", toast_reset_piggy: "貯金箱を割ったよ！🔨🐷", toast_refund_ok: "お金が戻ったよ！🐷💸", toast_levelup: "レベルアップ！🎉👶",
+                toast_export_ok: "バックアップをダウンロードしました！📦", toast_import_ok: "復元に成功しました！🚀", toast_file_err: "無効なファイルです！", no_data: "データがありません。",
+                months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"], days: ["日", "月", "火", "水", "木", "金", "土"]
+            },
+            ko: {
+                app_title: "베이비 로그", app_desc: "귀여운 아기의 기록", login_tab: "로그인", register_tab: "가입하기", btn_enter: "앱 들어가기", btn_create: "계정 만들기", btn_reset: "초기화", or_login_with: "또는",
+                greet_morning: "좋은 아침입니다! ⛅", greet_afternoon: "좋은 오후입니다! 🌤️", greet_evening: "좋은 저녁입니다! 🌙", greet_night: "늦은 밤이네요! 😴",
+                current_diaper_time: "현재 착용 시간", start_new_diaper: "새 기저귀 시작", start_diaper_title: "기저귀 시작", select_brand_start: "브랜드 선택", start_time_label: "시작 시간", btn_start_diaper: "확인",
+                end_diaper: "종료 및 기록", end_diaper_title: "주기 종료", end_time_label: "벗은 시간", health_piggy: "건강 저금통", saving_note: "장난감 살 돈", add_money: "돈 넣기",
+                dry: "뽀송함", wet: "젖음", add_record: "기록 추가", calendar_title: "일정 기록", show_all_logs: "모두 보기", filter_all: "모두",
+                settings_title: "분석 및 설정", analytics: "젖은 빈도", analytics_desc: "시간 경과에 따른 젖은 기저귀 발생 추적.", this_month: "이번 달", last_week: "지난주", this_week: "이번 주",
+                language: "언어", currency: "통화", theme_color: "테마 색상", target_savings: "목표 저축액", diaper_price: "기저귀 가격",
+                manage_brands: "브랜드 관리", brand_placeholder: "브랜드 이름...", select_brand: "사용한 브랜드", add: "추가",
+                manage_categories: "카테고리 관리", category_placeholder: "예: 장난감, 우유...", select_category: "무엇을 살까요?",
+                "Bỉm 🧷": "기저귀 🧷", "Sữa 🍼": "우유 🍼", "Quần áo 👕": "옷 👕", "Đồ chơi 🧸": "장난감 🧸",
+                bg_image: "배경 이미지", bg_hd: "✔️ HD 화질", btn_upload: "업로드", btn_delete: "삭제", bg_brightness: "배경 밝기", dark_mode: "다크 모드",
+                profile_title: "아기 프로필", vip_member: "VIP 아기", btn_export: "데이터 백업", btn_import: "복원하기", btn_logout: "로그아웃", footer_credit: "세상의 모든 착한 아기들을 위해 🍼✨",
+                nav_home: "홈", nav_logs: "기록", nav_spend: "장바구니", nav_settings: "설정", nav_profile: "프로필",
+                btn_save: "기록 저장", add_money_title: "저축 추가", add_money_desc: "기저귀를 아낄 때마다 여기에 돈을 추가하세요!", btn_confirm: "확인",
+                cart_title: "장바구니", piggy_balance: "저금통 잔액", btn_go_cart: "장바구니 가기", btn_add_to_cart: "장바구니에 추가", cart_items: "장바구니 상품", cart_empty: "장바구니가 비어 있습니다 🛒", btn_checkout: "결제하기",
+                spend_history: "구매 내역", cart_item_modal_title: "무엇을 살까요?", cart_item_modal_desc: "사고 싶은 것을 장바구니에 담으세요!", item_name: "상품명", item_qty: "수량", item_price: "단가", btn_confirm_add_cart: "추가하기", btn_reset_piggy: "저금통 깨기",
+                level: "레벨", level_name_1: "초보 아기", level_name_2: "기저귀 천사", level_name_3: "베이비 보스", inventory_title: "아기의 옷장", inventory_empty: "옷장이 비어 있습니다 🎒", good_baby_points: "착한 아기 포인트",
+                change_avatar: "아바타 변경", choose_icon: "아이콘 선택", or_upload: "또는 업로드", times: "회", target: "목표", current_brand: "현재:", no_brand_selected: "알 수 없음", total_diapers: "총 기저귀", total_days: "총 일수", total_time: "총 시간",
+                confirm_reset_piggy: "저금통을 깨고 다시 시작할까요? 🐷🔨", confirm_delete_record: "이 기록을 삭제할까요? 🗑️", confirm_delete_brand: "이 브랜드를 삭제할까요? 🧷", confirm_delete_category: "이 카테고리를 삭제할까요? 🛍️", confirm_refund: "삭제하고 저금통으로 환불할까요? 💸", confirm_cancel_cycle: "현재 기록을 취소할까요? ⏱️",
+                toast_firebase_missing: "Firebase를 구성하는 것을 잊지 마세요! 🍼", toast_loading: "로딩 중... ⏳", toast_login_ok: "로그인 성공!", toast_login_err: "비밀번호가 틀렸습니다!", toast_fill_all: "모두 입력해주세요!", toast_reg_ok: "계정이 생성되었습니다!", toast_save_price: "저장되었습니다!", toast_bg_ok: "배경이 업데이트되었습니다! 🌟", toast_bg_del: "배경이 삭제되었습니다", toast_avatar_ok: "아바타가 업데이트되었습니다!",
+                toast_dry_msgs: ["멋져요! 아기가 뽀송뽀송해요 ☀️", "최고! 🐥", "엄마도 안심 🥰"], toast_wet_msgs: ["쉬야를 했어요 💦💧", "새 기저귀가 필요해요 🌊", "샜어요! 🚨"],
+                toast_money_ok: "저금통에 돈을 추가했습니다 🐷🎉", toast_spend_ok: "결제 완료! 즐거운 쇼핑하세요! 🛍️", toast_not_enough: "앗! 돈이 부족해요 🐷💦", toast_reset_piggy: "저금통을 깼어요! 🔨🐷", toast_refund_ok: "환불 완료! 🐷💸", toast_levelup: "레벨업! 🎉👶",
+                toast_export_ok: "백업을 다운로드했습니다! 📦", toast_import_ok: "복원에 성공했습니다! 🚀", toast_file_err: "잘못된 파일입니다!", no_data: "데이터가 없습니다.",
+                months: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"], days: ["일", "월", "화", "수", "목", "금", "토"]
+            }
+        };
+
+        const t = (key) => { const lang = AppCore.config ? AppCore.config.lang || 'vn' : 'vn'; return i18n[lang][key] || key; };
+        const getLocale = () => { const l = AppCore.config ? AppCore.config.lang || 'vn' : 'vn'; return l === 'en' ? 'en-US' : l === 'zh' ? 'zh-CN' : l === 'ja' ? 'ja-JP' : l === 'ko' ? 'ko-KR' : 'vi-VN'; };
+        const getDynamicGreeting = () => { const hr = new Date().getHours(); if (hr >= 5 && hr < 12) return t('greet_morning'); if (hr >= 12 && hr < 18) return t('greet_afternoon'); if (hr >= 18 && hr < 22) return t('greet_evening'); return t('greet_night'); };
+        const getRandomToast = (type) => { const msgs = type === 'dry' ? t('toast_dry_msgs') : t('toast_wet_msgs'); return msgs[Math.floor(Math.random() * msgs.length)]; };
+
+        const updateUIText = () => {
+            document.querySelectorAll('[data-i18n]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n')); });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
+            if(AppCore.auth) {
+                SafeDOM.setText('greeting-text', `${getDynamicGreeting()}`);
+                const currentLang = AppCore.config ? AppCore.config.lang || 'vn' : 'vn';
+                if (AppCore.uiState.captionIndex === null) { AppCore.uiState.captionIndex = Math.floor(Math.random() * babyCareTips[currentLang].length); }
+                SafeDOM.setText('greeting-caption', babyCareTips[currentLang][AppCore.uiState.captionIndex]);
+                SafeDOM.setText('profile-name-display', AppCore.auth.username);
+            }
+            const priceLabel = SafeDOM.get('label-diaper-price'); const targetLabel = SafeDOM.get('label-target');
+            if(priceLabel && targetLabel) {
+                const cur = AppCore.config.currency || 'VND'; const symbols = {'VND': 'VNĐ', 'USD': 'USD', 'CNY': 'CNY', 'JPY': 'JPY', 'KRW': 'KRW'};
+                priceLabel.innerText = `${t('diaper_price')} (${symbols[cur]})`; targetLabel.innerText = `${t('target_savings')} (${symbols[cur]})`;
+            }
+        };
+
+        const CurrencyManager = {
+            rates: { VND: 1, USD: 25000, CNY: 3500, JPY: 160, KRW: 18 },
+            format(amountInVND) {
+                const cur = AppCore.config.currency || 'VND'; const converted = amountInVND / this.rates[cur];
+                if (cur === 'USD') return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(converted);
+                if (cur === 'CNY') return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(converted);
+                if (cur === 'JPY') return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(converted);
+                if (cur === 'KRW') return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(converted);
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(converted);
+            },
+            getInputValue(amountInVND) { const val = amountInVND / this.rates[AppCore.config.currency || 'VND']; const cur = AppCore.config.currency || 'VND'; if(cur === 'VND' || cur === 'JPY' || cur === 'KRW') return Math.floor(val); return Number(val.toFixed(2)); },
+            parseInputToVND(inputValue) { return inputValue * this.rates[AppCore.config.currency || 'VND']; },
+            formatBadge(amountInVND) {
+                const cur = AppCore.config.currency || 'VND'; const converted = amountInVND / this.rates[cur];
+                if(cur === 'VND') return `${Math.floor(converted / 1000)}k`; if(cur === 'USD') return `$${Math.floor(converted)}`; 
+                if(cur === 'CNY') return `¥${Math.floor(converted)}`; if(cur === 'JPY') return `¥${Math.floor(converted)}`; if(cur === 'KRW') return `₩${Math.floor(converted)}`;
+                return `${Math.floor(converted)}`;
+            }
+        };
+
+        const SafeDOM = {
+            get(id) { return document.getElementById(id); }, setText(id, text) { const el = this.get(id); if (el) el.innerText = text; },
+            setVal(id, val) { const el = this.get(id); if (el) el.value = val; }, setStyle(id, prop, val) { const el = this.get(id); if (el) el.style[prop] = val; },
+            show(id, display = 'block') { const el = this.get(id); if (el) el.style.display = display; }, hide(id) { const el = this.get(id); if (el) el.style.display = 'none'; }
+        };
+
+        const AppDB = {
+            dbName: 'SoTaPro_MasterDB_V20', storeName: 'app_data_store', db: null,
+            async init() { return new Promise((resolve) => { const request = indexedDB.open(this.dbName, 1); request.onupgradeneeded = (e) => { const db = e.target.result; if (!db.objectStoreNames.contains(this.storeName)) { db.createObjectStore(this.storeName); } }; request.onsuccess = (e) => { this.db = e.target.result; resolve(true); }; request.onerror = () => { resolve(false); }; }); },
+            async get(key) { if (!this.db) await this.init(); return new Promise((resolve) => { try { const tx = this.db.transaction(this.storeName, 'readonly'); const req = tx.objectStore(this.storeName).get(key); req.onsuccess = () => resolve(req.result); req.onerror = () => resolve(null); } catch(e) { resolve(null); } }); },
+            async set(key, value) { if (!this.db) await this.init(); return new Promise((resolve) => { try { const tx = this.db.transaction(this.storeName, 'readwrite'); tx.objectStore(this.storeName).put(value, key); tx.oncomplete = () => resolve(true); tx.onerror = () => resolve(false); } catch(e) { resolve(false); } }); },
+            async clear() { if (!this.db) await this.init(); return new Promise((resolve) => { const tx = this.db.transaction(this.storeName, 'readwrite'); tx.objectStore(this.storeName).clear(); tx.oncomplete = () => resolve(true); }); },
+            isLoggedIn() { return sessionStorage.getItem('TQD_Session_v20') === 'true'; }, setLogin() { sessionStorage.setItem('TQD_Session_v20', 'true'); }, setLogout() { sessionStorage.removeItem('TQD_Session_v20'); }
+        };
+
+        const AppUI = {
+            showToast(msg) {
+                const toast = document.createElement('div'); toast.className = 'toast-msg'; toast.innerText = msg; document.body.appendChild(toast); 
+                setTimeout(() => { toast.style.opacity = '0'; toast.style.top = '-50px'; toast.style.transition = 'all 0.4s ease'; setTimeout(() => toast.remove(), 400); }, 3500);
+            },
+            switchTab(tabId, btnElement) { 
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active')); 
+                SafeDOM.get(tabId).classList.add('active'); btnElement.classList.add('active'); 
+                if (tabId === 'tab-home' && AppCore.auth) { const currentLang = AppCore.config ? AppCore.config.lang || 'vn' : 'vn'; AppCore.uiState.captionIndex = Math.floor(Math.random() * babyCareTips[currentLang].length); SafeDOM.setText('greeting-caption', babyCareTips[currentLang][AppCore.uiState.captionIndex]); }
+                window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            },
+            openModal(id, setTime = false) { 
+                SafeDOM.show(id, 'flex'); 
+                if (setTime) { const now = new Date(); if(id === 'start-modal') { SafeDOM.setVal('start-time-input', `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`); AppCore.Settings.renderBrandSelector('modal-start-brands'); } else if (id === 'record-modal') { SafeDOM.setVal('record-time', `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`); AppCore.Logs.setType('dry'); AppCore.Settings.renderBrandSelector('modal-brands-selector'); } }
+                if (id === 'money-modal') { SafeDOM.setVal('money-input', ''); } else if (id === 'cart-item-modal') { SafeDOM.setVal('cart-item-name', ''); SafeDOM.setVal('cart-item-qty', '1'); SafeDOM.setVal('cart-item-price', ''); AppCore.Settings.renderCategorySelector('modal-category-selector'); }
+            },
+            closeModal(id) { SafeDOM.hide(id); },
+            initConfetti() {
+                const canvas = SafeDOM.get('confetti-canvas'); if(!canvas) return; const ctx = canvas.getContext('2d'); let particles = []; let animationId = null;
+                const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }; window.addEventListener('resize', resize); resize();
+                this.shootConfetti = () => {
+                    const emojis = ['🍼', '✨', '🌸', '🐷', '🧸', '🍬', '🐰', '🦄', '💖', '⭐'];
+                    for(let i = 0; i < 120; i++) { particles.push({ x: canvas.width / 2, y: canvas.height + 10, size: Math.random() * 20 + 20, dx: Math.random() * 16 - 8, dy: Math.random() * -20 - 15, emoji: emojis[Math.floor(Math.random() * emojis.length)], rotation: Math.random() * 360, rotSpeed: (Math.random() - 0.5) * 10 }); }
+                    if(!animationId) animate();
+                };
+                const animate = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); if(particles.length === 0) { animationId = null; return; }
+                    particles.forEach((p, i) => { 
+                        p.rotation += p.rotSpeed; p.x += p.dx; p.dy += 0.4; p.y += p.dy; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180); ctx.font = p.size + "px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(p.emoji, 0, 0); ctx.restore();
+                        if(p.y > canvas.height + 50) particles.splice(i, 1); 
+                    });
+                    animationId = requestAnimationFrame(animate);
+                };
+            }
+        };
+
+        const AppAuth = {
+            switchMode(mode) {
+                const slider = SafeDOM.get('auth-slider'); const tabs = document.querySelectorAll('.auth-tab');
+                if (mode === 'login') { slider.style.transform = 'translateX(0)'; tabs[0].classList.add('active'); tabs[1].classList.remove('active'); SafeDOM.show('form-login'); SafeDOM.hide('form-register'); } 
+                else { slider.style.transform = 'translateX(100%)'; tabs[0].classList.remove('active'); tabs[1].classList.add('active'); SafeDOM.hide('form-login'); SafeDOM.show('form-register'); }
+            },
+            render() {
+                SafeDOM.show('auth-overlay', 'flex');
+                if (AppCore.auth) { SafeDOM.setVal('login-username', AppCore.auth.username); SafeDOM.get('login-username').disabled = true; SafeDOM.setStyle('login-username', 'opacity', '0.6'); SafeDOM.hide('form-register'); SafeDOM.show('form-login'); document.querySelector('.auth-tabs').style.display = 'none'; SafeDOM.show('reset-auth-btn'); } 
+                else { SafeDOM.get('login-username').disabled = false; SafeDOM.setStyle('login-username', 'opacity', '1'); SafeDOM.setVal('login-username', ''); document.querySelector('.auth-tabs').style.display = 'flex'; SafeDOM.hide('reset-auth-btn'); }
+            },
+            login() {
+                const passEl = SafeDOM.get('login-password'); const pass = passEl ? passEl.value.trim() : '';
+                if (!pass) return AppUI.showToast(t('toast_fill_all'));
+                if (AppCore.auth && pass === AppCore.auth.password) { this.success(t('toast_login_ok')); } else { AppUI.showToast(t('toast_login_err')); }
+            },
+            async register() {
+                const userEl = SafeDOM.get('reg-username'); const passEl = SafeDOM.get('reg-password');
+                const user = userEl ? userEl.value.trim() : ''; const pass = passEl ? passEl.value.trim() : '';
+                if (!user || !pass) return AppUI.showToast(t('toast_fill_all'));
+                AppCore.auth = { username: user, password: pass, avatar: '👶' }; AppCore.data = { logs: [], currentSavings: 0, expenses: [], cart: [], inventory: [], exp: 0, level: 1 }; 
+                await AppCore.saveState(); this.success(t('toast_reg_ok'));
+            },
+            loginGoogle() {
+                if (typeof firebase === 'undefined' || firebase.apps.length === 0) return AppUI.showToast(t('toast_firebase_missing'));
+                const provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithPopup(provider).then((result) => { AppCore.auth = { username: result.user.displayName || 'Bé Ngoan', password: 'fb_login', avatar: result.user.photoURL || '👶' }; this.success(t('toast_login_ok')); }).catch((error) => AppUI.showToast("Lỗi rùi bé ơi: " + error.message));
+            },
+            loginFacebook() {
+                if (typeof firebase === 'undefined' || firebase.apps.length === 0) return AppUI.showToast(t('toast_firebase_missing'));
+                const provider = new firebase.auth.FacebookAuthProvider();
+                firebase.auth().signInWithPopup(provider).then((result) => { AppCore.auth = { username: result.user.displayName || 'Bé Ngoan', password: 'fb_login', avatar: result.user.photoURL || '👶' }; this.success(t('toast_login_ok')); }).catch((error) => AppUI.showToast("Lỗi rùi bé ơi: " + error.message));
+            },
+            loginX() {
+                if (typeof firebase === 'undefined' || firebase.apps.length === 0) return AppUI.showToast(t('toast_firebase_missing'));
+                const provider = new firebase.auth.TwitterAuthProvider();
+                firebase.auth().signInWithPopup(provider).then((result) => { AppCore.auth = { username: result.user.displayName || 'Bé Ngoan', password: 'fb_login', avatar: result.user.photoURL || '👶' }; this.success(t('toast_login_ok')); }).catch((error) => AppUI.showToast("Lỗi rùi bé ơi: " + error.message));
+            },
+            success(msg) { AppDB.setLogin(); SafeDOM.setVal('login-password', ''); SafeDOM.setVal('reg-password', ''); AppUI.showToast(msg); AppCore.startApp(); },
+            logout() { AppDB.setLogout(); location.reload(); },
+            async resetAll() { if (confirm(t('btn_reset') + " ?")) { await AppDB.clear(); location.reload(); } }
+        };
+
+        const AppWorkflowManager = {
+            handleMainAction() { const logs = AppCore.data.logs; const ongoing = logs.find(l => !l.endTime); if (ongoing) { AppUI.openModal('record-modal', true); } else { AppUI.openModal('start-modal', true); } },
+            submitCycleStart() {
+                const timeEl = SafeDOM.get('start-time-input'); let startTimestamp = new Date();
+                if (timeEl && timeEl.value) { const [hours, mins] = timeEl.value.split(':'); startTimestamp.setHours(hours, mins, 0, 0); }
+                AppCore.data.logs.push({ id: Date.now(), startTime: startTimestamp.toISOString(), endTime: null, type: null, brand: AppCore.uiState.activeBrand });
+                AppCore.saveState(); AppUI.closeModal('start-modal'); this.renderButtonUI(); AppCore.Timer.forceUpdate(); 
+                AppUI.showToast(AppCore.config.lang === 'vn' ? "Mặc bỉm mới xong rùi nè! 🍼👶" : "Mặc bỉm mới xong rùi nè! 🍼👶");
+            },
+            submitCycleEnd() {
+                const logs = AppCore.data.logs; const ongoing = logs.find(l => !l.endTime); if (!ongoing) return;
+                const timeEl = SafeDOM.get('record-time'); let endTimestamp = new Date();
+                if (timeEl && timeEl.value) { const [hours, mins] = timeEl.value.split(':'); endTimestamp.setHours(hours, mins, 0, 0); }
+                if (endTimestamp.getTime() < new Date(ongoing.startTime).getTime()) { AppUI.showToast(AppCore.config.lang === 'vn' ? "Lỗi: Khum thể gỡ bỉm trước giờ mặc được nha!" : "Lỗi: Khum thể gỡ bỉm trước giờ mặc được nha!"); return; }
+                ongoing.endTime = endTimestamp.toISOString(); ongoing.type = AppCore.uiState.activeLogType;
+                if(AppCore.uiState.activeBrand) { ongoing.brand = AppCore.uiState.activeBrand; }
+                AppCore.Profile.addExp(10);
+                AppCore.saveState(); AppCore.Logs.render(); AppCore.Calendar.render(); AppCore.Finance.updateCharts(); AppCore.Finance.calculate(); AppCore.Profile.updateStats();
+                this.renderButtonUI(); AppCore.Timer.forceUpdate(); AppUI.closeModal('record-modal'); AppUI.showToast(getRandomToast(ongoing.type));
+            },
+            cancelCurrentCycle() { if (confirm(t('confirm_cancel_cycle'))) { AppCore.data.logs = AppCore.data.logs.filter(l => l.endTime); AppCore.saveState(); this.renderButtonUI(); AppCore.Timer.forceUpdate(); } },
+            delete(id) { if(confirm(t('confirm_delete_record'))) { AppCore.data.logs = AppCore.data.logs.filter(l => l.id !== id); AppCore.saveState(); AppCore.Logs.render(); AppCore.Calendar.render(); AppCore.Finance.updateCharts(); AppCore.Profile.updateStats(); } },
+            renderButtonUI() {
+                const btn = SafeDOM.get('btn-main-action'); const txt = SafeDOM.get('txt-main-action'); if (!btn || !txt) return;
+                const ongoing = AppCore.data.logs.find(l => !l.endTime);
+                if (ongoing) { txt.innerText = t('end_diaper'); btn.style.background = 'linear-gradient(135deg, var(--danger-color), #FFA085)'; btn.style.boxShadow = '0 6px 20px rgba(255, 126, 103, 0.4)'; SafeDOM.show('btn-cancel-timer', 'inline-block'); SafeDOM.show('diaper-current-brand', 'inline-block'); } 
+                else { txt.innerText = t('start_new_diaper'); btn.style.background = 'var(--primary-gradient)'; btn.style.boxShadow = '0 6px 20px var(--primary-shadow)'; SafeDOM.hide('btn-cancel-timer'); SafeDOM.hide('diaper-current-brand'); }
+            }
+        };
+
+        const AppTimerEngine = {
+            start() { this.update(); AppCore.stateInterval = setInterval(() => this.update(), 1000); }, 
+            forceUpdate() { this.update(); },
+            update() {
+                const timerValEl = SafeDOM.get('diaper-timer-value'); const timerBrandEl = SafeDOM.get('diaper-current-brand'); if(!timerValEl) return;
+                const logs = AppCore.data.logs; const ongoing = logs.find(l => !l.endTime);
+                if (!ongoing) { timerValEl.innerText = "00:00:00"; timerValEl.style.color = 'var(--text-muted)'; if(timerBrandEl) timerBrandEl.style.display = 'none'; return; }
+                const startTime = new Date(ongoing.startTime).getTime(); const now = Date.now(); const diffMs = now - startTime;
+                if (diffMs < 0) { timerValEl.innerText = "00:00:00"; return; }
+                const diffSecs = Math.floor(diffMs / 1000); const hours = Math.floor(diffSecs / 3600); const mins = Math.floor((diffSecs % 3600) / 60); const secs = diffSecs % 60;
+                timerValEl.innerText = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (hours >= 4) { timerValEl.style.color = 'var(--danger-color)'; } else { timerValEl.style.color = 'var(--primary-color)'; }
+                if(timerBrandEl) { timerBrandEl.style.display = 'inline-block'; timerBrandEl.innerText = `${t('current_brand')} ${ongoing.brand || t('no_brand_selected')}`; }
+            }
+        };
+
+        const AppCore = {
+            data: { logs: [], currentSavings: 0, expenses: [], cart: [], inventory: [], exp: 0, level: 1 }, 
+            config: { unitPrice: 5000, targetSavings: 200000, themeColor: '#FF8BA7', themeColorLight: '#FFB3C6', bgImage: null, bgBrightness: 100, lang: 'vn', currency: 'VND', brands: ['Applecrumby', 'Bobby', 'Huggies', 'Moony'], expenseCategories: ['Bỉm 🧷', 'Sữa 🍼', 'Quần áo 👕', 'Đồ chơi 🧸'] },
+            auth: null, 
+            uiState: { activeLogType: 'dry', logFilter: 'all', calendarDate: new Date(), selectedDate: null, activeBrand: null, activeCategory: null, captionLoaded: false, captionIndex: null },
+            Workflow: AppWorkflowManager, Timer: AppTimerEngine,
+
+            async init() {
+                await AppDB.init(); AppUI.initConfetti(); 
+                const savedData = await AppDB.get('data'); const savedConfig = await AppDB.get('config'); const savedAuth = await AppDB.get('auth');
+                if (savedData) this.data = savedData; 
+                if (savedConfig) { this.config = { ...this.config, ...savedConfig }; if (!this.config.expenseCategories) { this.config.expenseCategories = ['Bỉm 🧷', 'Sữa 🍼', 'Quần áo 👕', 'Đồ chơi 🧸']; } } 
+                if (savedAuth) this.auth = savedAuth;
+                
+                if (!this.data.expenses) this.data.expenses = []; if (!this.data.cart) this.data.cart = []; if (!this.data.inventory) this.data.inventory = [];
+                if (typeof this.data.exp === 'undefined') this.data.exp = 0; if (typeof this.data.level === 'undefined') this.data.level = 1;
+                
+                this.Settings.checkNightMode(); this.Settings.applyThemeColor(); updateUIText(); this.Settings.updateLangUI(); this.Settings.updateCurrencyUI(); this.Settings.renderBrandsSettings(); this.Settings.renderCategorySettings(); 
+                
+                if (AppDB.isLoggedIn() && this.auth) { this.startApp(); } else { AppAuth.render(); }
+            },
+            
+            async saveState() { 
+                await AppDB.set('data', this.data); await AppDB.set('config', this.config); await AppDB.set('auth', this.auth); 
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0 && firebase.auth().currentUser) { const uid = firebase.auth().currentUser.uid; firebase.database().ref('users/' + uid).set(this.data); }
+            },
+            
+            startApp() {
+                SafeDOM.hide('auth-overlay'); SafeDOM.show('main-header', 'flex'); SafeDOM.show('main-content', 'flex'); SafeDOM.show('main-nav', 'flex');
+                SafeDOM.setVal('setting-target', CurrencyManager.getInputValue(this.config.targetSavings)); SafeDOM.setVal('setting-price', CurrencyManager.getInputValue(this.config.unitPrice)); SafeDOM.setVal('setting-brightness', this.config.bgBrightness); SafeDOM.setText('brightness-val', `${this.config.bgBrightness}%`);
+                requestAnimationFrame(() => {
+                    updateUIText(); this.Settings.applyBackground(); this.Settings.renderAvatar(); this.Logs.render(); this.Calendar.render(); this.Finance.calculate(); this.Finance.renderCart(); this.Finance.renderExpenses(); this.Finance.updateCharts(); this.Profile.updateStats(); this.Profile.renderInventory(); this.Workflow.renderButtonUI(); this.Timer.start(); 
+                });
+            },
+
+            Profile: {
+                updateStats() {
+                    const finishedLogs = AppCore.data.logs.filter(l => l.endTime); SafeDOM.setText('stat-diapers', finishedLogs.length);
+                    const uniqueDays = new Set(finishedLogs.map(l => new Date(l.endTime).toDateString())); SafeDOM.setText('stat-days', uniqueDays.size);
+                    const totalMs = finishedLogs.reduce((acc, log) => { return acc + (new Date(log.endTime).getTime() - new Date(log.startTime).getTime()); }, 0);
+                    const totalHrs = Math.floor(totalMs / 3600000); const totalMins = Math.floor((totalMs % 3600000) / 60000); SafeDOM.setText('stat-time', `${totalHrs}h ${totalMins}m`);
+                    this.updateLevelUI();
+                },
+                addExp(points) {
+                    AppCore.data.exp += points; const newLevel = Math.floor(AppCore.data.exp / 100) + 1;
+                    if (newLevel > AppCore.data.level) { AppCore.data.level = newLevel; AppUI.showToast(t('toast_levelup')); AppUI.initConfetti(); AppUI.shootConfetti(); }
+                    AppCore.saveState(); this.updateLevelUI();
+                },
+                updateLevelUI() {
+                    const exp = AppCore.data.exp || 0; const level = AppCore.data.level || 1; const expInCurrentLevel = exp % 100; const percent = (expInCurrentLevel / 100) * 100;
+                    SafeDOM.setText('user-level', `${t('level')} ${level}`); SafeDOM.setText('user-exp', expInCurrentLevel);
+                    const fillEl = SafeDOM.get('exp-progress'); if (fillEl) fillEl.style.width = `${percent}%`;
+                    let titleKey = 'level_name_1'; if (level >= 5 && level < 10) titleKey = 'level_name_2'; else if (level >= 10) titleKey = 'level_name_3'; SafeDOM.setText('user-level-name', t(titleKey));
+                },
+                renderInventory() {
+                    const container = SafeDOM.get('inventory-list-container'); if(!container) return; container.innerHTML = '';
+                    if (!AppCore.data.inventory || AppCore.data.inventory.length === 0) { container.innerHTML = `<div class="text-center p-3 w-100"><p class="fw-bold text-muted" style="font-size: 0.9rem;">${t('inventory_empty')}</p></div>`; return; }
+                    const grouped = AppCore.data.inventory.reduce((acc, item) => { acc[item.name] = (acc[item.name] || 0) + item.qty; return acc; }, {});
+                    for (const [name, qty] of Object.entries(grouped)) {
+                        const chip = document.createElement('div'); chip.className = 'inventory-chip'; chip.innerHTML = `🎁 ${t(name)} <span style="background: var(--primary-color); color: white; border-radius: 12px; padding: 2px 8px; font-size: 0.75rem;">x${qty}</span>`; container.appendChild(chip);
+                    }
+                }
+            },
+
+            Settings: {
+                changeLanguage(lang) { AppCore.config.lang = lang; AppCore.saveState(); updateUIText(); this.updateLangUI(); AppCore.Workflow.renderButtonUI(); AppCore.Calendar.render(); AppCore.Logs.render(); AppCore.Finance.calculate(); AppCore.Finance.renderCart(); AppCore.Finance.renderExpenses(); AppCore.Finance.updateCharts(); AppCore.Profile.updateStats(); AppCore.Profile.renderInventory(); },
+                updateLangUI() { const lang = AppCore.config.lang; document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active')); const activeBtn = SafeDOM.get('lang-' + lang); if (activeBtn) activeBtn.classList.add('active'); },
+                changeCurrency(cur) { AppCore.config.currency = cur; AppCore.saveState(); this.updateCurrencyUI(); updateUIText(); SafeDOM.setVal('setting-target', CurrencyManager.getInputValue(AppCore.config.targetSavings)); SafeDOM.setVal('setting-price', CurrencyManager.getInputValue(AppCore.config.unitPrice)); AppCore.Finance.calculate(); AppCore.Finance.renderCart(); AppCore.Finance.renderExpenses(); },
+                updateCurrencyUI() { const cur = AppCore.config.currency; document.querySelectorAll('.cur-btn').forEach(btn => btn.classList.remove('active')); const activeBtn = SafeDOM.get('cur-' + cur); if (activeBtn) activeBtn.classList.add('active'); },
+                renderBrandsSettings() {
+                    const container = SafeDOM.get('brands-settings-list'); if(!container) return; container.innerHTML = '';
+                    AppCore.config.brands.forEach((brand, index) => { const chip = document.createElement('div'); chip.className = 'brand-chip ripple-btn'; chip.innerHTML = `${brand} <div class="brand-chip-del" onclick="event.stopPropagation(); AppCore.Settings.removeBrand(${index})">×</div>`; container.appendChild(chip); });
+                },
+                addBrandFast(containerId) { const newBrand = prompt(t('brand_placeholder')); if (newBrand && newBrand.trim() !== '') { const cleanBrand = newBrand.trim(); if (!AppCore.config.brands.includes(cleanBrand)) { AppCore.config.brands.push(cleanBrand); AppCore.saveState(); this.renderBrandsSettings(); } this.renderBrandSelector(containerId); const chips = document.querySelectorAll(`#${containerId} .brand-chip`); const newChip = Array.from(chips).find(c => c.innerText === cleanBrand); if (newChip) newChip.click(); } },
+                addBrand() { const inputEl = SafeDOM.get('new-brand-input'); if(!inputEl) return; const val = inputEl.value.trim(); if(val && !AppCore.config.brands.includes(val)) { AppCore.config.brands.push(val); AppCore.saveState(); this.renderBrandsSettings(); inputEl.value = ''; } },
+                removeBrand(index) { if(confirm(t('confirm_delete_brand'))) { AppCore.config.brands.splice(index, 1); AppCore.saveState(); this.renderBrandsSettings(); } },
+                renderBrandSelector(containerId) {
+                    const container = SafeDOM.get(containerId); if(!container) return; container.innerHTML = ''; AppCore.uiState.activeBrand = null; 
+                    AppCore.config.brands.forEach(brand => { const chip = document.createElement('div'); chip.className = 'brand-chip ripple-btn'; chip.innerText = brand; chip.onclick = function() { document.querySelectorAll(`#${containerId} .brand-chip`).forEach(c => c.classList.remove('active')); this.classList.add('active'); AppCore.uiState.activeBrand = brand; }; container.appendChild(chip); });
+                    const addChip = document.createElement('div'); addChip.className = 'brand-chip brand-chip-add ripple-btn'; addChip.innerHTML = '➕ ' + t('add'); addChip.onclick = () => { this.addBrandFast(containerId); }; container.appendChild(addChip);
+                },
+                renderCategorySettings() {
+                    const container = SafeDOM.get('categories-settings-list'); if(!container) return; container.innerHTML = '';
+                    AppCore.config.expenseCategories.forEach((cat, index) => { const chip = document.createElement('div'); chip.className = 'brand-chip ripple-btn'; chip.innerHTML = `${t(cat)} <div class="brand-chip-del" onclick="event.stopPropagation(); AppCore.Settings.removeCategory(${index})">×</div>`; container.appendChild(chip); });
+                },
+                addCategoryFast(containerId) { const newCat = prompt(t('category_placeholder')); if (newCat && newCat.trim() !== '') { const cleanCat = newCat.trim(); if (!AppCore.config.expenseCategories.includes(cleanCat)) { AppCore.config.expenseCategories.push(cleanCat); AppCore.saveState(); this.renderCategorySettings(); } this.renderCategorySelector(containerId); SafeDOM.setVal('cart-item-name', t(cleanCat)); } },
+                addCategory() { const inputEl = SafeDOM.get('new-category-input'); if(!inputEl) return; const val = inputEl.value.trim(); if(val && !AppCore.config.expenseCategories.includes(val)) { AppCore.config.expenseCategories.push(val); AppCore.saveState(); this.renderCategorySettings(); inputEl.value = ''; } },
+                removeCategory(index) { if(confirm(t('confirm_delete_category'))) { AppCore.config.expenseCategories.splice(index, 1); AppCore.saveState(); this.renderCategorySettings(); } },
+                renderCategorySelector(containerId) {
+                    const container = SafeDOM.get(containerId); if(!container) return; container.innerHTML = ''; 
+                    AppCore.config.expenseCategories.forEach(cat => { const chip = document.createElement('div'); chip.className = 'brand-chip ripple-btn'; chip.innerText = t(cat); chip.onclick = function() { SafeDOM.setVal('cart-item-name', t(cat)); }; container.appendChild(chip); });
+                    const addChip = document.createElement('div'); addChip.className = 'brand-chip brand-chip-add ripple-btn'; addChip.innerHTML = '➕ ' + t('add'); addChip.onclick = () => { this.addCategoryFast(containerId); }; container.appendChild(addChip);
+                },
+                toggleTheme(forceDark) {
+                    const html = document.documentElement; const isDark = forceDark !== undefined ? forceDark : html.getAttribute('data-theme') !== 'dark';
+                    if (isDark) { html.setAttribute('data-theme', 'dark'); const toggleInput = SafeDOM.get('setting-darkmode'); if(toggleInput) toggleInput.checked = true; } else { html.removeAttribute('data-theme'); const toggleInput = SafeDOM.get('setting-darkmode'); if(toggleInput) toggleInput.checked = false; }
+                },
+                checkNightMode() { const hr = new Date().getHours(); if (hr >= 22 || hr < 5) this.toggleTheme(true); },
+                changeThemeColor(mainColor, lightColor, btnEl) { AppCore.config.themeColor = mainColor; AppCore.config.themeColorLight = lightColor; AppCore.saveState(); this.applyThemeColor(); document.querySelectorAll('.color-picker').forEach(el => el.classList.remove('active')); if(btnEl) btnEl.classList.add('active'); },
+                applyThemeColor() { const root = document.documentElement; root.style.setProperty('--primary-color', AppCore.config.themeColor); root.style.setProperty('--primary-light', AppCore.config.themeColorLight); const grad = SafeDOM.get('piggyGrad'); if(grad) grad.innerHTML = `<stop offset="0%" stop-color="${AppCore.config.themeColor}" /><stop offset="100%" stop-color="var(--success-color)" />`; },
+                updateTarget(val) { const inputTarget = parseFloat(val); if (!isNaN(inputTarget) && inputTarget > 0) { AppCore.config.targetSavings = CurrencyManager.parseInputToVND(inputTarget); AppCore.saveState(); AppCore.Finance.calculate(); AppUI.showToast(t('toast_save_price')); } else { SafeDOM.setVal('setting-target', CurrencyManager.getInputValue(AppCore.config.targetSavings)); } },
+                updatePrice(val) { const inputPrice = parseFloat(val); if (!isNaN(inputPrice) && inputPrice > 0) { AppCore.config.unitPrice = CurrencyManager.parseInputToVND(inputPrice); AppCore.saveState(); AppUI.showToast(t('toast_save_price')); } },
+                renderAvatar() { const displayEl = SafeDOM.get('profile-avatar-display'); if (!displayEl) return; const avatar = AppCore.auth.avatar; if (avatar && avatar.startsWith('data:image')) { displayEl.innerHTML = `<img src="${avatar}" style="width:100%; height:100%; object-fit:cover;">`; } else { displayEl.innerHTML = avatar || '👶'; } },
+                updateAvatar(val) { AppCore.auth.avatar = val; AppCore.saveState(); this.renderAvatar(); AppUI.closeModal('avatar-modal'); AppUI.showToast(t('toast_avatar_ok')); },
+                uploadCustomAvatar(event) {
+                    const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); 
+                    reader.onload = (e) => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); const size = 300; canvas.width = size; canvas.height = size; const minDim = Math.min(img.width, img.height); const startX = (img.width - minDim) / 2; const startY = (img.height - minDim) / 2; ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, size, size); try { AppCore.Settings.updateAvatar(canvas.toDataURL('image/jpeg', 0.8)); } catch(err) {} }; img.src = e.target.result; }; reader.readAsDataURL(file);
+                },
+                async uploadBackground(event) { const file = event.target.files[0]; if (!file) return; AppUI.showToast(t('toast_loading')); const reader = new FileReader(); reader.onload = async (e) => { AppCore.config.bgImage = e.target.result; await AppCore.saveState(); AppCore.Settings.applyBackground(); AppUI.showToast(t('toast_bg_ok')); }; reader.readAsDataURL(file); },
+                updateBrightness(val) { AppCore.config.bgBrightness = val; AppCore.saveState(); this.applyBackground(); },
+                clearBackground() { AppCore.config.bgImage = null; AppCore.saveState(); this.applyBackground(); AppUI.showToast(t('toast_bg_del')); },
+                applyBackground() { const bgDiv = SafeDOM.get('layer-background-image'); if(!bgDiv) return; if (AppCore.config.bgImage) { bgDiv.style.backgroundImage = `url(${AppCore.config.bgImage})`; bgDiv.style.filter = `brightness(${AppCore.config.bgBrightness || 100}%)`; bgDiv.style.opacity = '1'; } else { bgDiv.style.opacity = '0'; } }
+            },
+
+            Logs: {
+                setType(type) {
+                    AppCore.uiState.activeLogType = type; const dryBtn = SafeDOM.get('btn-type-dry'); const wetBtn = SafeDOM.get('btn-type-wet');
+                    if(dryBtn && wetBtn) {
+                        if (type === 'dry') { dryBtn.style.border = '4px solid var(--success-color)'; dryBtn.style.background = 'rgba(132, 220, 198, 0.25)'; wetBtn.style.border = '4px solid var(--glass-border)'; wetBtn.style.background = 'rgba(255,255,255,0.4)'; } 
+                        else { wetBtn.style.border = '4px solid var(--danger-color)'; wetBtn.style.background = 'rgba(255, 126, 103, 0.25)'; dryBtn.style.border = '4px solid var(--glass-border)'; dryBtn.style.background = 'rgba(255,255,255,0.4)'; }
+                    }
+                },
+                setFilter(type, btnElement) { AppCore.uiState.logFilter = type; document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); btnElement.classList.add('active'); this.render(); },
+                toggleDetail(id) { const detailEl = SafeDOM.get(`log-detail-${id}`); if(detailEl) { if(detailEl.style.display === 'none' || detailEl.style.display === '') { detailEl.style.display = 'block'; detailEl.style.animation = 'slideDown 0.3s ease forwards'; } else { detailEl.style.display = 'none'; } } },
+                render() {
+                    const container = SafeDOM.get('log-list-container'); if(!container) return; container.innerHTML = ''; 
+                    let filtered = AppCore.data.logs.filter(l => l.endTime); 
+                    if (AppCore.uiState.logFilter !== 'all') { filtered = filtered.filter(l => l.type === AppCore.uiState.logFilter); }
+                    if (AppCore.uiState.selectedDate) { const selDateStr = AppCore.uiState.selectedDate.toDateString(); filtered = filtered.filter(l => new Date(l.endTime).toDateString() === selDateStr); }
+                    const sorted = [...filtered].sort((a, b) => new Date(b.endTime) - new Date(a.endTime));
+                    
+                    if (sorted.length === 0) { container.innerHTML = `<div class="glass-card text-center p-5"><span style="font-size:3.5rem;">📭</span><p class="mt-3 fw-bold text-muted" style="font-size:1.1rem;">${t('no_data')}</p></div>`; return; }
+
+                    const locale = getLocale();
+                    sorted.forEach(log => {
+                        const startObj = new Date(log.startTime); const endObj = new Date(log.endTime);
+                        const timeStartStr = startObj.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }); 
+                        const timeEndStr = endObj.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+                        const durationMs = endObj.getTime() - startObj.getTime(); let durationText = ''; 
+                        const totalSecs = Math.floor(durationMs / 1000); const hrs = Math.floor(totalSecs / 3600); const mns = Math.floor((totalSecs % 3600) / 60); const secs = totalSecs % 60;
+                        
+                        if (hrs > 0) { durationText = `${hrs}h ${mns}m`; } else if (mns > 0) { durationText = `${mns}m`; } else { durationText = `${secs}s`; }
+                        const progressPercent = Math.min(((totalSecs/60) / 360) * 100, 100); const isDry = log.type === 'dry'; const statusTxt = isDry ? t('dry') : t('wet');
+                        const brandTag = log.brand ? `<span style="font-size:0.75rem; background: var(--primary-gradient); color:white; padding: 2px 8px; border-radius: 8px; margin-left: 8px; vertical-align: middle; font-weight:800; text-shadow:none;">${log.brand}</span>` : '';
+                        
+                        const html = `
+                            <div class="log-item ${log.type} animate-slide ripple-btn" style="cursor:pointer; flex-wrap: wrap;" onclick="AppCore.Logs.toggleDetail(${log.id})">
+                                <div class="log-icon">${isDry ? '☀️' : '💧'}</div>
+                                <div class="log-info">
+                                    <div class="log-status ${isDry ? 'text-success' : 'text-danger'}">${statusTxt} ${brandTag}</div>
+                                    <div class="log-time" style="font-size:0.85rem; opacity:0.9;">🗓️ ${endObj.toLocaleDateString(locale)}</div>
+                                </div>
+                                <button class="text-muted ripple-btn" onclick="event.stopPropagation(); AppCore.Workflow.delete(${log.id})" style="padding: 12px; border-radius:50%; margin-left:6px; z-index:2; border:none; background:none;">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                                <div class="log-detail-section" id="log-detail-${log.id}">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted" style="font-size: 0.85rem; font-weight:600;">Start: <b style="color:var(--text-main); font-size:1rem;">${timeStartStr}</b></span>
+                                        <span class="text-muted" style="font-size: 0.85rem; font-weight:600;">End: <b style="color:var(--text-main); font-size:1rem;">${timeEndStr}</b></span>
+                                    </div>
+                                    <div class="text-center mb-2 mt-3"><span class="text-primary fw-bold text-shadow-glass" style="font-size: 1.4rem;">⏱️ ${durationText}</span></div>
+                                    <div class="log-progress-wrapper">
+                                        <div class="log-progress-bar">
+                                            <div class="log-progress-fill" style="width: ${progressPercent}%; background: ${isDry ? 'var(--success-color)' : 'var(--danger-color)'};"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', html);
+                    });
+                }
+            },
+
+            Calendar: {
+                changeMonth(dir) { AppCore.uiState.calendarDate.setMonth(AppCore.uiState.calendarDate.getMonth() + dir); this.render(); },
+                selectDate(y, m, d) { const clickedDate = new Date(y, m, d); const currentSelected = AppCore.uiState.selectedDate; if (currentSelected && currentSelected.toDateString() === clickedDate.toDateString()) { AppCore.uiState.selectedDate = null; } else { AppCore.uiState.selectedDate = clickedDate; } this.render(); AppCore.Logs.render(); },
+                clearSelection() { AppCore.uiState.selectedDate = null; this.render(); AppCore.Logs.render(); },
+                render() {
+                    const grid = SafeDOM.get('calendar-days'); const clearBtn = SafeDOM.get('btn-clear-date'); if(!grid || !clearBtn) return;
+                    const targetDate = AppCore.uiState.calendarDate; const year = targetDate.getFullYear(); const month = targetDate.getMonth(); 
+                    const monthName = i18n[AppCore.config.lang].months[month]; SafeDOM.setText('calendar-title', `${monthName}, ${year}`); 
+                    clearBtn.style.display = AppCore.uiState.selectedDate ? 'inline-block' : 'none';
+                    Array.from(grid.children).forEach(child => { child.remove(); }); 
+                    i18n[AppCore.config.lang].days.forEach(d => { grid.insertAdjacentHTML('beforeend', `<div class="calendar-day-name">${d}</div>`); });
+                    const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date();
+                    for (let i = 0; i < firstDay; i++) { grid.insertAdjacentHTML('beforeend', `<div></div>`); }
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const loopDate = new Date(year, month, day); const dateStr = loopDate.toDateString(); const dayLogs = AppCore.data.logs.filter(l => l.endTime && new Date(l.endTime).toDateString() === dateStr);
+                        let indicator = ''; if (dayLogs.length > 0) { const hasWet = dayLogs.some(l => l.type === 'wet'); indicator = `<span class="status-dot">${hasWet ? '💧' : '☀️'}</span>`; }
+                        const isToday = today.toDateString() === dateStr ? 'today' : ''; const isSelected = (AppCore.uiState.selectedDate && AppCore.uiState.selectedDate.toDateString() === dateStr) ? 'selected' : '';
+                        grid.insertAdjacentHTML('beforeend', `<div class="calendar-day ${isToday} ${isSelected} ripple-btn" onclick="AppCore.Calendar.selectDate(${year}, ${month}, ${day})">${day}${indicator}</div>`);
+                    }
+                }
+            },
+
+            Finance: {
+                submitMoney() {
+                    const el = SafeDOM.get('money-input'); 
+                    if(el && el.value) {
+                        const valInVND = CurrencyManager.parseInputToVND(parseFloat(el.value)); 
+                        AppCore.data.currentSavings = (AppCore.data.currentSavings || 0) + valInVND; 
+                        AppCore.Profile.addExp(5);
+                        AppCore.saveState();
+                        this.calculate(); 
+                        AppUI.closeModal('money-modal'); 
+                        AppUI.showToast(t('toast_money_ok')); 
+                        AppUI.initConfetti(); AppUI.shootConfetti();
+                        
+                        const piggyIcon = SafeDOM.get('piggy-main-icon');
+                        if (piggyIcon) {
+                            piggyIcon.classList.add('pop-active');
+                            setTimeout(() => piggyIcon.classList.remove('pop-active'), 300);
+                            
+                            const rect = piggyIcon.getBoundingClientRect();
+                            const startX = rect.left + rect.width / 2;
+                            const startY = rect.top + rect.height / 2;
+                            const icons = ['🍼', '🪙', '✨', '🧸', '💖', '👶'];
+                            const fragment = document.createDocumentFragment();
+                            const count = 20;
+                            
+                            for (let i = 0; i < count; i++) {
+                                const iconEl = document.createElement('div');
+                                iconEl.className = 'flying-icon';
+                                iconEl.textContent = icons[Math.floor(Math.random() * icons.length)];
+                                iconEl.style.left = `${startX}px`;
+                                iconEl.style.top = `${startY}px`;
+                                
+                                const angle = Math.random() * Math.PI * 2;
+                                const velocity = 60 + Math.random() * 100;
+                                const tx = Math.cos(angle) * velocity;
+                                const ty = Math.sin(angle) * velocity - 50;
+                                
+                                iconEl.style.setProperty('--tx', `${tx}px`);
+                                iconEl.style.setProperty('--ty', `${ty}px`);
+                                iconEl.style.animation = `popAndFly ${0.6 + Math.random() * 0.4}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+                                
+                                fragment.appendChild(iconEl);
+                                
+                                setTimeout(() => {
+                                    if (iconEl.parentNode) iconEl.parentNode.removeChild(iconEl);
+                                }, 1000);
+                            }
+                            document.body.appendChild(fragment);
+                        }
+                    }
+                },
+                addCartItem() {
+                    const nameEl = SafeDOM.get('cart-item-name'); const qtyEl = SafeDOM.get('cart-item-qty'); const priceEl = SafeDOM.get('cart-item-price');
+                    if(nameEl && nameEl.value.trim() && qtyEl && priceEl && priceEl.value) {
+                        const name = nameEl.value.trim(); const qty = parseInt(qtyEl.value); const priceInVND = CurrencyManager.parseInputToVND(parseFloat(priceEl.value));
+                        if(qty > 0 && priceInVND > 0) {
+                            AppCore.data.cart.push({ id: Date.now(), name: name, qty: qty, price: priceInVND });
+                            AppCore.saveState(); this.renderCart(); AppUI.closeModal('cart-item-modal');
+                        }
+                    } else { AppUI.showToast(t('toast_fill_all')); }
+                },
+                removeCartItem(id) { AppCore.data.cart = AppCore.data.cart.filter(item => item.id !== id); AppCore.saveState(); this.renderCart(); },
+                checkoutCart() {
+                    if (AppCore.data.cart.length === 0) return;
+                    const totalCost = AppCore.data.cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+                    if (totalCost > (AppCore.data.currentSavings || 0)) { AppUI.showToast(t('toast_not_enough')); return; }
+                    
+                    AppCore.data.currentSavings -= totalCost; 
+                    AppCore.data.cart.forEach(item => {
+                        AppCore.data.expenses.push({ id: Date.now() + Math.random(), amount: item.qty * item.price, category: `${item.name} (x${item.qty})`, date: new Date().toISOString() });
+                        AppCore.data.inventory.push({ id: Date.now() + Math.random(), name: item.name, qty: item.qty });
+                    });
+                    
+                    AppCore.data.cart = []; AppCore.Profile.addExp(20); AppCore.saveState();
+                    this.calculate(); this.renderCart(); this.renderExpenses(); AppCore.Profile.renderInventory();
+                    AppUI.showToast(t('toast_spend_ok')); AppUI.initConfetti(); AppUI.shootConfetti();
+                },
+                renderCart() {
+                    const container = SafeDOM.get('cart-list-container'); if(!container) return; container.innerHTML = '';
+                    if (AppCore.data.cart.length === 0) { container.innerHTML = `<div class="text-center p-4"><p class="fw-bold text-muted">${t('cart_empty')}</p></div>`; SafeDOM.setText('cart-estimated-total', CurrencyManager.format(0)); return; }
+                    
+                    let totalCost = 0;
+                    AppCore.data.cart.forEach(item => {
+                        const itemTotal = item.qty * item.price; totalCost += itemTotal;
+                        const html = `
+                            <div class="log-item cart-item ripple-btn d-flex justify-content-between align-items-center mb-2" style="padding: 10px 16px;">
+                                <div class="log-info">
+                                    <div class="fw-bold text-main" style="font-size: 1.05rem;">${item.name}</div>
+                                    <div class="text-muted" style="font-size: 0.8rem;">${t('item_qty')}: <b class="text-info">${item.qty}</b> | ${t('item_price')}: <b>${CurrencyManager.format(item.price)}</b></div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="text-danger fw-bold" style="font-size: 1.1rem;">${CurrencyManager.format(itemTotal)}</div>
+                                    <button class="text-muted" onclick="AppCore.Finance.removeCartItem(${item.id})" style="padding: 5px; font-size: 1.2rem;">❌</button>
+                                </div>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', html);
+                    });
+                    SafeDOM.setText('cart-estimated-total', CurrencyManager.format(totalCost));
+                },
+                resetPiggy() { if(confirm(t('confirm_reset_piggy'))) { AppCore.data.currentSavings = 0; AppCore.saveState(); this.calculate(); AppUI.showToast(t('toast_reset_piggy')); } },
+                deleteExpense(id) {
+                    if(confirm(t('confirm_refund'))) {
+                        const expense = AppCore.data.expenses.find(e => e.id === id);
+                        if(expense) {
+                            AppCore.data.currentSavings += expense.amount; AppCore.data.expenses = AppCore.data.expenses.filter(e => e.id !== id);
+                            AppCore.saveState(); this.calculate(); this.renderExpenses(); AppUI.showToast(t('toast_refund_ok'));
+                        }
+                    }
+                },
+                renderExpenses() {
+                    const container = SafeDOM.get('expense-list-container'); if(!container) return; container.innerHTML = '';
+                    const sorted = [...AppCore.data.expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    if (sorted.length === 0) { container.innerHTML = `<div class="glass-card text-center p-5"><span style="font-size:3.5rem;">📭</span><p class="mt-3 fw-bold text-muted" style="font-size:1.1rem;">${t('no_data')}</p></div>`; SafeDOM.setText('spend-total-display', CurrencyManager.format(0)); return; }
+                    
+                    let totalSpent = 0;
+                    const locale = getLocale();
+
+                    sorted.forEach(exp => {
+                        totalSpent += exp.amount; const dateObj = new Date(exp.date);
+                        const dateStr = dateObj.toLocaleDateString(locale); const timeStr = dateObj.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+                        const html = `
+                            <div class="log-item spend animate-slide ripple-btn" style="cursor:default; flex-wrap: wrap;">
+                                <div class="log-icon">🛍️</div>
+                                <div class="log-info">
+                                    <div class="log-status text-warning">${exp.category}</div>
+                                    <div class="log-time" style="font-size:0.85rem; opacity:0.9;">🗓️ ${timeStr} - ${dateStr}</div>
+                                </div>
+                                <div class="text-danger fw-bold" style="font-size: 1.1rem; margin-right: 10px;">-${CurrencyManager.format(exp.amount)}</div>
+                                <button class="text-muted ripple-btn" onclick="AppCore.Finance.deleteExpense(${exp.id})" style="padding: 12px; border-radius:50%; z-index:2; border:none; background:none;">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        `;
+                        container.insertAdjacentHTML('beforeend', html);
+                    });
+                    const totalEl = document.getElementById('spend-total-display'); if(totalEl) totalEl.innerText = CurrencyManager.format(totalSpent);
+                },
+                calculate() {
+                    const target = AppCore.config.targetSavings || 200000; const savings = AppCore.data.currentSavings || 0;
+                    SafeDOM.setText('total-piggy', CurrencyManager.format(savings)); SafeDOM.setText('cart-balance-display', CurrencyManager.format(savings)); SafeDOM.setText('target-badge', `${t('target')}: ${CurrencyManager.formatBadge(target)}`);
+                    const circleFill = SafeDOM.get('piggy-svg-fill'); 
+                    if(circleFill) { const percent = Math.min(savings / target, 1); const circumference = 2 * Math.PI * 70; circleFill.style.strokeDashoffset = circumference - (percent * circumference); }
+                    SafeDOM.setStyle('piggy-progress', 'width', `${Math.min((savings/target)*100, 100)}%`);
+                    const btnResetPiggy = SafeDOM.get('btn-reset-piggy'); if(btnResetPiggy) { if(savings >= target && target > 0) { btnResetPiggy.style.display = 'block'; } else { btnResetPiggy.style.display = 'none'; } }
+                    const finishedLogs = AppCore.data.logs.filter(l => l.endTime); const today = new Date().toDateString(); const todayLogs = finishedLogs.filter(l => new Date(l.endTime).toDateString() === today); const countTxt = t('times'); 
+                    SafeDOM.setText('today-dry-count', `${todayLogs.filter(l => l.type === 'dry').length} ${countTxt}`); SafeDOM.setText('today-wet-count', `${todayLogs.filter(l => l.type === 'wet').length} ${countTxt}`);
+                },
+                updateCharts() {
+                    const now = new Date(); const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); const startOfThisWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()); const startOfLastWeek = new Date(startOfThisWeek.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    const wetLogs = AppCore.data.logs.filter(l => l.endTime && l.type === 'wet');
+                    const monthCount = wetLogs.filter(l => new Date(l.endTime) >= startOfMonth).length; const thisWeekCount = wetLogs.filter(l => new Date(l.endTime) >= startOfThisWeek).length; 
+                    const lastWeekCount = wetLogs.filter(l => { const d = new Date(l.endTime); return d >= startOfLastWeek && d < startOfThisWeek; }).length;
+                    const countTxt = t('times'); 
+                    SafeDOM.setText('chart-month-val', `${monthCount} ${countTxt}`); SafeDOM.setText('chart-lastweek-val', `${lastWeekCount} ${countTxt}`); SafeDOM.setText('chart-thisweek-val', `${thisWeekCount} ${countTxt}`);
+                    SafeDOM.setStyle('chart-month-bar', 'width', `${Math.min((monthCount / 60) * 100, 100)}%`); SafeDOM.setStyle('chart-lastweek-bar', 'width', `${Math.min((lastWeekCount / 15) * 100, 100)}%`); SafeDOM.setStyle('chart-thisweek-bar', 'width', `${Math.min((thisWeekCount / 15) * 100, 100)}%`);
+                }
+            },
+
+            Backup: {
+                export() {
+                    const backupData = { data: AppCore.data, config: AppCore.config, auth: AppCore.auth, version: '38.0' };
+                    const jsonStr = JSON.stringify(backupData); const blob = new Blob([jsonStr], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); 
+                    a.href = url; a.download = `SoTaPro_Backup_${new Date().getTime()}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); 
+                    AppUI.showToast(t('toast_export_ok'));
+                },
+                import(event) {
+                    const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onerror = () => { AppUI.showToast("Read Error"); };
+                    reader.onload = async (e) => {
+                        try {
+                            const imported = JSON.parse(e.target.result);
+                            if (imported && typeof imported === 'object') {
+                                if (imported.data || imported.config || imported.auth) { 
+                                    AppCore.data = imported.data || { logs: [], currentSavings: 0, expenses: [], cart: [], inventory: [], exp: 0, level: 1 }; 
+                                    AppCore.config = imported.config ? { ...AppCore.config, ...imported.config } : AppCore.config; 
+                                    if(imported.auth) AppCore.auth = imported.auth; 
+                                } else if (Array.isArray(imported)) { AppCore.data.logs = imported; } else { AppCore.data = imported; }
+                                
+                                if(!AppCore.data.logs) AppCore.data.logs = []; if(!AppCore.data.currentSavings) AppCore.data.currentSavings = 0; if(!AppCore.data.expenses) AppCore.data.expenses = []; if(!AppCore.data.cart) AppCore.data.cart = []; if(!AppCore.data.inventory) AppCore.data.inventory = []; if(typeof AppCore.data.exp === 'undefined') AppCore.data.exp = 0; if(typeof AppCore.data.level === 'undefined') AppCore.data.level = 1;
+                                AppCore.data.logs.forEach(l => { if(l.timestamp && !l.endTime) { l.endTime = l.timestamp; l.startTime = l.timestamp; } });
+                                await AppCore.saveState(); AppUI.showToast(t('toast_import_ok')); setTimeout(() => { location.reload(); }, 1000);
+                            } else { AppUI.showToast(t('toast_file_err')); }
+                        } catch (err) { AppUI.showToast(t('toast_file_err')); } finally { event.target.value = ''; }
+                    }; reader.readAsText(file);
+                },
+                importAuth(event) {
+                    const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        try {
+                            const imported = JSON.parse(e.target.result);
+                            if (imported && typeof imported === 'object' && imported.auth) {
+                                AppCore.auth = imported.auth;
+                                if(imported.data) AppCore.data = imported.data;
+                                if(imported.config) AppCore.config = imported.config;
+                                await AppCore.saveState(); AppDB.setLogin();
+                                AppUI.showToast("Khôi phục thành công! Đang vào nhà bé...");
+                                setTimeout(() => location.reload(), 1000);
+                            } else { AppUI.showToast("File hông có tài khoản bé ơi!"); }
+                        } catch(err) { AppUI.showToast("Đọc file bị lỗi òi!"); } finally { event.target.value = ''; }
+                    }; reader.readAsText(file);
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => AppCore.init());
+        
+    </script>
+</body>
+</html>
